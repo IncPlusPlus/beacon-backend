@@ -4,7 +4,7 @@ plugins {
 	id 'java'
 }
 
-group = 'io.github.incplusplus'
+group = 'io.github.incplusplus.beacon'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
@@ -13,9 +13,13 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation project(':common')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Disabled until we've got a rough schema as well as a mongo config
+//	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }
 
 tasks.named('test') {

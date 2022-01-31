@@ -1,1 +1,5 @@
-rootProject.name = 'bonfire-backend'
+rootProject.name = 'beacon-backend'
+
+include 'common'
+include 'central-identity-server'
+include 'city'
