@@ -1,7 +1,7 @@
 package io.github.incplusplus.beacon.common;
 
 public class Sample {
-    public static boolean returnsTrue() {
-        return true;
-    }
+  public static boolean returnsTrue() {
+    return true;
+  }
 }
