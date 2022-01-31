@@ -1,8 +1,6 @@
 plugins {
 	id 'org.springframework.boot' version '2.6.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-	id 'jacoco'
 }
 
 group = 'io.github.incplusplus.beacon'
@@ -25,12 +23,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-jacocoTestReport {
-	reports {
-		xml.enabled true
-		html.enabled false
-	}
-}
-
-check.dependsOn jacocoTestReport
