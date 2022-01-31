@@ -1,0 +1,35 @@
+name: Build
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: liberica
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        run: ./gradlew build
+      - name: Upload code coverage (common module)
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./common/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: common
+          name: Common
+      - name: Upload code coverage (Central Identity Server)
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./central-identity-server/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: cis
+          name: Central Identity Server
+      - name: Upload code coverage (City)
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./city/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: city
+          name: City
