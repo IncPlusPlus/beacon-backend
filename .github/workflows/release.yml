@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org'
       - uses: actions/setup-java@v2
         with:
           distribution: liberica
@@ -18,27 +22,18 @@ jobs:
 
       - name: Execute Gradle build
         run: ./gradlew build
-      - name: Upload code coverage (common module)
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./common/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: common
-          name: Common
-      - name: Upload code coverage (Central Identity Server)
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./central-identity-server/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: cis
-          name: Central Identity Server
-      - name: Upload code coverage (City)
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./city/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: city
-          name: City
       - name: Execute Gradle createRelease
         # Ordinarily I'd just run the release command and let Gradle handle making and pushing tags. However, https://github.com/allegro/axion-release-plugin/issues/401 causes an issue because JGit can't use newer SSH keys.
         # This command will make the git tag.
         run: ./gradlew createRelease
       - name: Push the new tag
         run: NEW_TAG=$(git tag) && echo Preparing to push new tag "'$NEW_TAG'" && git push origin $NEW_TAG
+
+      - name: Publish client lib for Central Identity Server
+        run: npm publish ./central-identity-server/build/openapi/generated-client-source
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish client lib for City
+        run: npm publish ./city/build/openapi/generated-client-source
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
