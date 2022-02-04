@@ -6,7 +6,6 @@ plugins {
 }
 
 group = 'io.github.incplusplus.beacon'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {

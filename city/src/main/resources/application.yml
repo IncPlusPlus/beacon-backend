@@ -3,3 +3,8 @@ spring:
     name: beacon-city
 server:
   port: ${CITY_PORT:8080}
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    url: /v3/api-docs.yml

@@ -1,0 +1,76 @@
+---
+openapi: 3.0.1
+tags:
+  - name: SampleText
+    description: Filler text
+info:
+  title: Beacon City API
+  version: '@version@'
+  description: |
+    This is the API for the City component of the Beacon backend.
+    A City is a service that may host one or more Towers.
+
+servers:
+  - url: 'http://localhost:8080'
+    description: localhost
+  - url: 'https://beacon-backend-main-staging.herokuapp.com:8080'
+    description: Main branch
+  - url: 'https://beacon-backend-prod.herokuapp.com:8080'
+    description: Production
+
+paths:
+  '/helloWorld':
+    get:
+      tags: [SampleText]
+      description: Says "Hello, world!"
+      operationId: helloWorld
+      responses:
+        '200':
+          description: Ok. Operation Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloWorldResponse'
+
+#------------------------------------------------------------------------
+# Components
+#------------------------------------------------------------------------
+components:
+
+  #----------------------------------------------------------------------
+  # Security Schemes
+  #----------------------------------------------------------------------
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  #----------------------------------------------------------------------
+  # Parameter
+  #----------------------------------------------------------------------
+#  parameters:
+    # No parameters yet
+
+  #----------------------------------------------------------------------
+  # Schema
+  #----------------------------------------------------------------------
+  schemas:
+    #----------------------------------------------------------------------
+    # Shared Types
+    #----------------------------------------------------------------------
+    ZonedDateTime:
+      type: string
+      format: date-time
+    #----------------------------------------------------------------------
+    # Shared Properties
+    #----------------------------------------------------------------------
+
+    #----------------------------------------------------------------------
+    # Object Schemas
+    #----------------------------------------------------------------------
+    HelloWorldResponse:
+      type: object
+      properties:
+        result_text:
+          type: string
+          example: Hello, world!

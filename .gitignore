@@ -1,3 +1,6 @@
+# API docs static hosting
+**/resources/static/v3/api-docs.yml
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
