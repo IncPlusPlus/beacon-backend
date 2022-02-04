@@ -1,1 +1,5 @@
-
+spring:
+  application:
+    name: beacon-cis
+server:
+  port: ${CIS_PORT:9876}
