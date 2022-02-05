@@ -1,0 +1,1 @@
+web: ./gradlew --parallel --max-workers=2 :central-identity-server:bootRun :city:bootRun
