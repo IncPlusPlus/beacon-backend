@@ -20,12 +20,12 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Execute Gradle build
-        run: ./gradlew build
       - name: Execute Gradle createRelease
         # Ordinarily I'd just run the release command and let Gradle handle making and pushing tags. However, https://github.com/allegro/axion-release-plugin/issues/401 causes an issue because JGit can't use newer SSH keys.
         # This command will make the git tag.
         run: ./gradlew createRelease
+      - name: Execute Gradle build
+        run: ./gradlew build
       - name: Push the new tag
         run: NEW_TAG=$(git tag) && echo Preparing to push new tag "'$NEW_TAG'" && git push origin $NEW_TAG
 
