@@ -115,3 +115,6 @@ task generateClientLibrary(type: GenerateTask, dependsOn: createVersionedSpec) {
 
 compileJava.dependsOn(generateServerStubs)
 assemble.dependsOn(generateClientLibrary)
+
+// For Heroku
+task stage(dependsOn: ['bootJar'])

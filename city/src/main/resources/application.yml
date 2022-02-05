@@ -2,7 +2,8 @@ spring:
   application:
     name: beacon-city
 server:
-  port: ${CITY_PORT:8080}
+  # The PORT environment variable is set by Heroku
+  port: ${PORT:8080}
 springdoc:
   api-docs:
     enabled: false
