@@ -18,7 +18,10 @@ jobs:
         with:
           distribution: liberica
           java-version: 17
-
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - name: Install the Java plugin
+        run: heroku plugins:install java
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
@@ -30,6 +33,15 @@ jobs:
         run: ./gradlew build
       - name: Push the new tag
         run: NEW_TAG=$(git tag) && echo Preparing to push new tag "'$NEW_TAG'" && git push origin $NEW_TAG
+
+      - name: Deploy new CIS instance to Heroku
+        run: heroku jar:deploy central-identity-server/build/libs/central-identity-server.jar -a beacon-cis-main-staging
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: Deploy new City instance to Heroku
+        run: heroku jar:deploy city/build/libs/city.jar -a beacon-city-main-staging
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
       - name: Publish client lib for Central Identity Server
         run: npm publish ./central-identity-server/build/openapi/generated-client-source
