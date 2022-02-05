@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: beacon-city
+server:
+  # The PORT environment variable is set by Heroku
+  port: ${PORT:8080}
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    url: /v3/api-docs.yml

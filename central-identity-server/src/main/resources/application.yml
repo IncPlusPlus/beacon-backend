@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: beacon-cis
+server:
+  # The PORT environment variable is set by Heroku
+  port: ${PORT:9876}
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    url: /v3/api-docs.yml

@@ -1,20 +1,53 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
 	id 'org.springframework.boot' version '2.6.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id "org.openapi.generator" version "5.4.0"
+}
+
+ext {
+	beaconCISSpec = "${project.projectDir}/src/main/openapi/beacon-central-identity-server.openapi.yml"
+	versionedBeaconCISSpec = "${project.buildDir}/openapi/beacon-central-identity-server-versioned.openapi.yml"
+	openApiGeneratedSourceDir = "${project.buildDir}/openapi/generated-source"
+	openApiGeneratedClientSourceDir = "${project.buildDir}/openapi/generated-client-source"
 }
 
 group = 'io.github.incplusplus.beacon'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+
+springBoot {
+	buildInfo {
+		version = rootProject.version
+	}
+}
 
 repositories {
 	mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir "${openApiGeneratedSourceDir}/src/main/java"
+		}
+	}
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation project(':common')
+	// Required for OpenApi generator
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// Required for OpenApi generator
+	implementation 'io.swagger.core.v3:swagger-annotations:2.1.12'
+	// Required for OpenApi generator
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
+	// For showing Swagger UI
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// Disabled until we've got a rough schema as well as a mongo config
 //	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
@@ -23,3 +56,64 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task createVersionedSpec(type: Copy) {
+	from beaconCISSpec
+	into "${project.buildDir}/openapi"
+	rename { String specFileName -> "beacon-central-identity-server-versioned.openapi.yml" }
+	filter(ReplaceTokens, tokens: [version: project.version])
+}
+
+task staticallyServeOpenAPISpec(type: Copy, dependsOn: createVersionedSpec) {
+	from versionedBeaconCISSpec
+	into "${project.projectDir}/src/main/resources/static/v3"
+	rename { String specFileName -> "api-docs.yml" }
+}
+processResources.dependsOn(staticallyServeOpenAPISpec)
+
+task cleanOldSpec(type: Delete) {
+	delete "${project.projectDir}/src/main/resources/static/v3/api-docs.yml"
+}
+clean.dependsOn cleanOldSpec
+
+task generateServerStubs(type: GenerateTask, dependsOn: createVersionedSpec) {
+	generatorName = 'spring'
+	inputSpec = versionedBeaconCISSpec
+	outputDir = openApiGeneratedSourceDir
+	apiPackage = 'io.github.incplusplus.beacon.centralidentityserver.generated.controller'
+	modelPackage = 'io.github.incplusplus.beacon.centralidentityserver.generated.dto'
+	modelNameSuffix = 'Dto'
+	configOptions = [
+			'useTags'                : 'true',
+			'interfaceOnly'          : 'true',
+			'skipDefaultInterface'   : 'true',
+			'generateSupportingFiles': 'false',
+			'dateLibrary'            : 'custom',
+			'useBeanValidation'      : 'true',
+			'performBeanValidation'  : 'true',
+	]
+	typeMappings = [
+			'DateTime': 'ZonedDateTime',
+	]
+	importMappings = [
+			'Instant'      : 'java.time.Instant',
+			'ZonedDateTime': 'java.time.ZonedDateTime'
+	]
+}
+
+task generateClientLibrary(type: GenerateTask, dependsOn: createVersionedSpec) {
+	generatorName = 'typescript-fetch'
+	inputSpec = versionedBeaconCISSpec
+	outputDir = openApiGeneratedClientSourceDir
+	configOptions = [
+			'npmName'            : 'beacon-central-identity-server',
+			'supportsES6'        : 'true',
+			'typescriptThreePlus': 'true'
+	]
+}
+
+compileJava.dependsOn(generateServerStubs)
+assemble.dependsOn(generateClientLibrary)
+
+// For Heroku
+task stage(dependsOn: ['bootJar'])
