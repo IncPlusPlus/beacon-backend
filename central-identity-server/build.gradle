@@ -114,3 +114,6 @@ task generateClientLibrary(type: GenerateTask, dependsOn: createVersionedSpec) {
 
 compileJava.dependsOn(generateServerStubs)
 assemble.dependsOn(generateClientLibrary)
+
+// Stupid Heroku requirement
+task stage(dependsOn: ['build', 'clean'])
