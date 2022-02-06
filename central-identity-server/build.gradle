@@ -48,6 +48,9 @@ dependencies {
 	// For showing Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
 
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// Disabled until we've got a rough schema as well as a mongo config
 //	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'

@@ -19,6 +19,10 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
 
+    ext {
+        lombokVersion = '1.18.22'
+    }
+
     spotless {
         java {
             googleJavaFormat('1.13.0')
