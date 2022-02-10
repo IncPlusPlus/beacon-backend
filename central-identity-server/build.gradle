@@ -49,9 +49,14 @@ dependencies {
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
 	// For showing Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+	// For conversion between DTOs and Documents/Entities
+	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+	// For nicer error messages in the API
+	implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
 
 	compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
 	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// Disabled until we've got a rough schema as well as a mongo config
