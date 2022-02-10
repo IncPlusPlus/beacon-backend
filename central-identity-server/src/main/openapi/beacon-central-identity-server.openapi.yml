@@ -141,7 +141,7 @@ components:
     UserAccount:
       type: object
       properties:
-        account_id:
+        id:
           description: The unique identifier for this account
           type: string
           example: 507f1f77bcf86cd799439011
