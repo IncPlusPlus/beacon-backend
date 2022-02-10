@@ -62,7 +62,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/account/{user-account-id}/':
+  '/account/{user-account-id}':
     parameters:
       - $ref: '#/components/parameters/user-account-id'
     get:
