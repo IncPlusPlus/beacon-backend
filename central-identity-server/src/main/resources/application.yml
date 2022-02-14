@@ -1,6 +1,13 @@
 spring:
   application:
     name: beacon-cis
+  web:
+    resources:
+      # https://github.com/zalando/problem-spring-web/issues/732#issue-1108850606
+      add-mappings: false
+  mvc:
+    # https://github.com/zalando/problem-spring-web/issues/732#issue-1108850606
+    throw-exception-if-no-handler-found: true
 server:
   # The PORT environment variable is set by Heroku
   port: ${PORT:9876}
