@@ -1,8 +1,11 @@
 package io.github.incplusplus.beacon.centralidentityserver.config;
 
+import java.io.IOException;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 
 @Configuration
 public class MvcConfiguration implements WebMvcConfigurer {
@@ -23,6 +26,20 @@ public class MvcConfiguration implements WebMvcConfigurer {
     registry
         .addResourceHandler("/v3/api-docs.yml")
         .addResourceLocations("classpath:/static")
-        .resourceChain(true);
+        .resourceChain(true)
+        .addResolver(
+            new PathResourceResolver() {
+              @Override
+              protected Resource getResource(String resourcePath, Resource location)
+                  throws IOException {
+                Resource requestedResource = location.createRelative("/static" + resourcePath);
+                if (requestedResource.exists() && requestedResource.isReadable()) {
+                  return requestedResource;
+                } else {
+                  throw new IOException(
+                      "Resource /static/v3/api-docs.yml not readable or doesn't exist");
+                }
+              }
+            });
   }
 }
