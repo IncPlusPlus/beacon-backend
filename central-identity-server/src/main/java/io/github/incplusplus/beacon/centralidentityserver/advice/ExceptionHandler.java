@@ -5,4 +5,9 @@ import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.spring.web.advice.security.SecurityAdviceTrait;
 
 @ControllerAdvice
-public class ExceptionHandler implements ProblemHandling, SecurityAdviceTrait {}
+public class ExceptionHandler implements ProblemHandling, SecurityAdviceTrait {
+  @Override
+  public boolean isCausalChainsEnabled() {
+    return true;
+  }
+}
