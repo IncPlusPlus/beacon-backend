@@ -9,10 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 public class User {
-
   @Id private String id;
   private String emailAddress;
   private String username;
   private String password;
-  private String profilePictureUrl;
 }

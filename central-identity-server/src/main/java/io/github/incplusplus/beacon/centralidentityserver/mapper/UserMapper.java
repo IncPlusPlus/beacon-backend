@@ -11,7 +11,6 @@ public interface UserMapper {
 
   UserAccountDto userToUserDto(User user);
 
-  @Mapping(target = "profilePictureUrl", ignore = true)
   @Mapping(target = "id", ignore = true)
   User createAccountRequestDtoToUser(CreateAccountRequestDto createAccountRequestDto);
 }

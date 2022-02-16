@@ -68,4 +68,8 @@ public class UserService {
               return userAccountDto;
             });
   }
+
+  public Optional<User> getAccountByUsername(String username) {
+    return userRepository.findByUsername(username);
+  }
 }

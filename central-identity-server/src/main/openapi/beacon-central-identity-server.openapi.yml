@@ -19,7 +19,7 @@ servers:
     description: Production
 
 paths:
-  '/account/createNewAccount':
+  '/account/create-new-account':
     post:
       tags: [ Account Management ]
       description: Create a new user account
@@ -43,14 +43,17 @@ paths:
   '/account/update-profile-picture':
     put:
       tags: [ Account Management ]
-      description: Upload a profile picture for the currently signed-in user.
+      description: Upload a profile picture for the currently signed-in user. This image MUST be a PNG.
       operationId: updateProfilePicture
       requestBody:
         content:
-          image/*:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                picture:
+                  type: string
+                  format: binary
       responses:
         '201':
           description: Picture updated.
@@ -78,6 +81,29 @@ paths:
                 $ref: '#/components/schemas/UserAccount'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/account/{user-account-id}/profile-picture':
+    parameters:
+      - $ref: '#/components/parameters/user-account-id'
+    get:
+      tags: [ Account Management ]
+      description: Get the profile picture file of this specific user
+      operationId: getProfilePicture
+      responses:
+        '200':
+          description: Ok. Operation successful.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -153,10 +179,6 @@ components:
           description: The username associated with the account ID
           type: string
           example: TheOfficialFancySnail
-        profile_picture_url:
-          description: The location at which the user's profile picture can be found. This may be empty if never set.
-          type: string
-          example: https://beacon-cis.herokuapp.com/pfps/507f1f77bcf86cd799439011.png
 
 
   #----------------------------------------------------------------------
