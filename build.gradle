@@ -35,7 +35,28 @@ subprojects {
         }
     }
 
+    jacocoTestCoverageVerification {
+        // exclude generated classes from test coverage calculation
+        afterEvaluate {
+            getClassDirectories().setFrom(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        'io/github/incplusplus/beacon/**/generated/**',
+                        'io/github/incplusplus/beacon/**/mapper/**Impl**',
+                ])
+            })
+        }
+    }
+
     jacocoTestReport {
+        // exclude generated classes from test coverage presentation
+        afterEvaluate {
+            getClassDirectories().setFrom(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        'io/github/incplusplus/beacon/**/generated/**',
+                        'io/github/incplusplus/beacon/**/mapper/**Impl**',
+                ])
+            })
+        }
         reports {
             xml.required = true
             html.required = true
