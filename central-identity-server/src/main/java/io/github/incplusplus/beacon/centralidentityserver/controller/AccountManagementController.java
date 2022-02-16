@@ -56,15 +56,20 @@ public class AccountManagementController implements AccountManagementApi {
 
   @Override
   public ResponseEntity<Resource> getProfilePicture(String userAccountID) {
-    return ResponseEntity.ok(storageService.loadAsResource(userAccountID+".png"));
+    return ResponseEntity.ok(storageService.loadAsResource(userAccountID + ".png"));
   }
 
   @Override
   public ResponseEntity<UserAccountDto> updateProfilePicture(MultipartFile picture) {
-    if(picture.getContentType()==null||!picture.getContentType().equals("image/png")) {
-      throw new UnsupportedFileTypeException(picture.getContentType(),"image/png");
+    if (picture.getContentType() == null || !picture.getContentType().equals("image/png")) {
+      throw new UnsupportedFileTypeException(picture.getContentType(), "image/png");
     }
-    storageService.store(picture, userService.getAccountByUsername(authenticationFacade.getAuthentication().getName()).orElseThrow().getId());
+    storageService.store(
+        picture,
+        userService
+            .getAccountByUsername(authenticationFacade.getAuthentication().getName())
+            .orElseThrow()
+            .getId());
     return null;
   }
 }

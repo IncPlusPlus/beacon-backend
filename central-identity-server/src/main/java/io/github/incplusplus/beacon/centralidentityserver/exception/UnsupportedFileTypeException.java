@@ -13,6 +13,10 @@ public class UnsupportedFileTypeException extends AbstractThrowableProblem {
         TYPE,
         "Bad request",
         Status.BAD_REQUEST,
-        "The file type '"+fileType+"' is not supported. Only files of type(s) '"+supportedTypes+"' are supported here.");
+        "The file type '"
+            + fileType
+            + "' is not supported. Only files of type(s) '"
+            + supportedTypes
+            + "' are supported here.");
   }
 }
