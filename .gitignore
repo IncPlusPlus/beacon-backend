@@ -1,3 +1,6 @@
+# Stuff from the user-uploaded files directory which may become populated during development
+**/upload-dir/**
+
 # API docs static hosting
 **/resources/static/v3/api-docs.yml
 
