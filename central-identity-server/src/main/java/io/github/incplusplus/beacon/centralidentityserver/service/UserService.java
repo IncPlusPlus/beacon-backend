@@ -52,7 +52,13 @@ public class UserService {
     return userRepository.findByUsername(username).isPresent();
   }
 
-  public Optional<UserAccountDto> getAccountById(
+  /**
+   * @param userAccountId the ID of the account to find
+   * @param usernameOfAccountRequestingInfo the ID of the account requesting this information
+   * @return the account information requested. For privacy reasons, the email address will be
+   *     redacted if the requested account is not the same as the account sending the request.
+   */
+  public Optional<UserAccountDto> publicGetAccountById(
       String userAccountId, String usernameOfAccountRequestingInfo) {
     return userRepository
         .findById(userAccountId)
@@ -67,6 +73,10 @@ public class UserService {
               }
               return userAccountDto;
             });
+  }
+
+  public Optional<User> getAccountById(String id) {
+    return userRepository.findById(id);
   }
 
   public Optional<User> getAccountByUsername(String username) {

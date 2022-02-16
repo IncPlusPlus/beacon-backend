@@ -50,7 +50,7 @@ public class AccountManagementController implements AccountManagementApi {
   @Override
   public ResponseEntity<UserAccountDto> getAccount(String userAccountId) {
     return ResponseEntity.of(
-        userService.getAccountById(
+        userService.publicGetAccountById(
             userAccountId, authenticationFacade.getAuthentication().getName()));
   }
 
