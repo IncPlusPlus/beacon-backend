@@ -1,24 +1,23 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" factoryName="Gradle" name="Spotless Apply"
-    type="GradleRunConfiguration">
-    <DebugAllEnabled>false</DebugAllEnabled>
-    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+  <configuration default="false" name="Spotless Apply" type="GradleRunConfiguration" factoryName="Gradle" activateToolWindowBeforeRun="false">
     <ExternalSystemSettings>
-      <option name="executionName"/>
-      <option name="externalProjectPath" value="$PROJECT_DIR$"/>
-      <option name="externalSystemIdString" value="GRADLE"/>
-      <option name="scriptParameters" value=""/>
+      <option name="executionName" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$" />
+      <option name="externalSystemIdString" value="GRADLE" />
+      <option name="scriptParameters" value="" />
       <option name="taskDescriptions">
-        <list/>
+        <list />
       </option>
       <option name="taskNames">
         <list>
-          <option value="spotlessApply"/>
+          <option value="spotlessApply" />
         </list>
       </option>
-      <option name="vmOptions"/>
+      <option name="vmOptions" />
     </ExternalSystemSettings>
-    <method v="2"/>
+    <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+    <DebugAllEnabled>false</DebugAllEnabled>
+    <method v="2" />
   </configuration>
 </component>
