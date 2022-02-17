@@ -4,7 +4,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "org.openapi.generator" version "5.4.0" apply false
+    id "org.openapi.generator" version "5.4.0"
 }
 
 ext {
@@ -38,6 +38,8 @@ sourceSets {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation project(':common')
     // Required for OpenApi generator
@@ -48,13 +50,20 @@ dependencies {
     implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
     // For showing Swagger UI
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    // For conversion between DTOs and Documents/Entities
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    // For nicer error messages in the API
+    implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    // https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html#configuration-metadata.annotation-processor.configuring
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // Disabled until we've got a rough schema as well as a mongo config
-//	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
+    testImplementation("org.assertj:assertj-core:3.22.0")
 }
 
 tasks.named('test') {
