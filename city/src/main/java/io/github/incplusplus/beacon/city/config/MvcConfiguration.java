@@ -1,4 +1,4 @@
-package io.github.incplusplus.beacon.centralidentityserver.config;
+package io.github.incplusplus.beacon.city.config;
 
 import io.github.incplusplus.beacon.common.config.MvcConfigurationBase;
 import org.springframework.context.annotation.Configuration;
