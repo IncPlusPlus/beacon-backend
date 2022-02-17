@@ -1,4 +1,4 @@
-package io.github.incplusplus.beacon.centralidentityserver.advice;
+package io.github.incplusplus.beacon.city.advice;
 
 import io.github.incplusplus.beacon.common.advice.ExceptionHandlerBase;
 import org.springframework.web.bind.annotation.ControllerAdvice;
