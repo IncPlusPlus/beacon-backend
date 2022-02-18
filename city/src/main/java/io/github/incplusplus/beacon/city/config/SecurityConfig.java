@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
@@ -21,14 +20,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final SecurityProblemSupport problemSupport;
 
-  private final UserDetailsService userDetailsService;
-
   @Autowired
-  public SecurityConfig(
-      SecurityProblemSupport problemSupport, UserDetailsService userDetailsService) {
+  public SecurityConfig(SecurityProblemSupport problemSupport) {
     super();
     this.problemSupport = problemSupport;
-    this.userDetailsService = userDetailsService;
   }
 
   @Override
