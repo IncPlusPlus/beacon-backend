@@ -52,7 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // @formatter:off
     http.csrf().disable()
         .authorizeRequests()
-          .antMatchers("/account/createNewAccount").permitAll()
           .antMatchers("/invalidSession*").anonymous()
           .anyRequest().authenticated()
           .and()
