@@ -29,6 +29,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateAccountRequest'
+      security: []   # No security
       responses:
         '201':
           description: Account created.
@@ -208,3 +209,9 @@ components:
         application/problem+json:
           schema:
             $ref: 'https://opensource.zalando.com/restful-api-guidelines/problem-1.0.1.yaml#/Problem'
+
+#------------------------------------------------------------------------
+# Security
+#------------------------------------------------------------------------
+security:
+  - basicAuth: [ ]
