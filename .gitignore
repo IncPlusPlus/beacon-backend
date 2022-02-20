@@ -1,3 +1,6 @@
+# Stuff from the user-uploaded files directory which may become populated during development
+**/upload-dir/**
+
 # API docs static hosting
 **/resources/static/v3/api-docs.yml
 
@@ -20,13 +23,23 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+# Excludes all files at the top level of the .idea folder
+/.idea/*.*
+# Excludes everything below that I think
+/.idea/*/**
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+###  IDEA stuff that should be shared ###
+# The file that makes IntelliJ prompt you for plugins you should install to work on this project
+!.idea/externalDependencies.xml
+# Sets the preferred Code Style. The GoogleStyle value is from a style that's built-into IntelliJ if you have the google-java-format plugin installed
+!.idea/codeStyles/codeStyleConfig.xml
+
 
 ### NetBeans ###
 /nbproject/private/

@@ -21,6 +21,12 @@ dependencyManagement {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // For showing Swagger UI
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    // For nicer error messages in the API
+    implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

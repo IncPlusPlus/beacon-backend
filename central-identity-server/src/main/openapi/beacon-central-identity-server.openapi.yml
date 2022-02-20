@@ -1,8 +1,8 @@
 ---
 openapi: 3.0.1
 tags:
-  - name: SampleText
-    description: Filler text
+  - name: Account Management
+    description: Create and edit an account + view account details by ID
 info:
   title: Beacon Central Identity Server API
   version: '@version@'
@@ -19,18 +19,94 @@ servers:
     description: Production
 
 paths:
-  '/helloWorld':
-    get:
-      tags: [ SampleText ]
-      description: Says "Hello, world!"
-      operationId: helloWorld
+  '/account/create-new-account':
+    post:
+      tags: [ Account Management ]
+      description: Create a new user account
+      operationId: createNewAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+      security: []   # No security
       responses:
-        '200':
-          description: Ok. Operation Successful
+        '201':
+          description: Account created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelloWorldResponse'
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/account/update-profile-picture':
+    put:
+      tags: [ Account Management ]
+      description: Upload a profile picture for the currently signed-in user. This image MUST be a PNG.
+      operationId: updateProfilePicture
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                picture:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Picture updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/account/{user-account-id}':
+    parameters:
+      - $ref: '#/components/parameters/user-account-id'
+    get:
+      tags: [ Account Management ]
+      description: Get information about the user with the specified ID
+      operationId: getAccount
+      responses:
+        '200':
+          description: Ok. Operation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/account/{user-account-id}/profile-picture':
+    parameters:
+      - $ref: '#/components/parameters/user-account-id'
+    get:
+      tags: [ Account Management ]
+      description: Get the profile picture file of this specific user
+      operationId: getProfilePicture
+      responses:
+        '200':
+          description: Ok. Operation successful.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
 #------------------------------------------------------------------------
 # Components
@@ -45,11 +121,17 @@ components:
       type: http
       scheme: basic
 
-    #----------------------------------------------------------------------
-    # Parameter
-    #----------------------------------------------------------------------
-    #  parameters:
-    # No parameters yet
+  #----------------------------------------------------------------------
+  # Parameter
+  #----------------------------------------------------------------------
+  parameters:
+    user-account-id:
+      name: user-account-id
+      in: path
+      description: The ID of a user account
+      required: true
+      schema:
+        type: string
 
   #----------------------------------------------------------------------
   # Schema
@@ -68,9 +150,68 @@ components:
     #----------------------------------------------------------------------
     # Object Schemas
     #----------------------------------------------------------------------
-    HelloWorldResponse:
+    CreateAccountRequest:
       type: object
       properties:
-        result_text:
+        email_address:
+          description: The email address of the new account. It is required that this username is unique
           type: string
-          example: Hello, world!
+          example: my.name.or.something@gmail.com
+        username:
+          description: The username of the new account. It is required that this username is unique
+          type: string
+          example: TheOfficialFancySnail
+        password:
+          description: The password for the new account
+          type: string
+          example: BxobetM5yHoICD657VDa0kVb5c8CUT0iYoU
+    UserAccount:
+      type: object
+      properties:
+        id:
+          description: The unique identifier for this account
+          type: string
+          example: 507f1f77bcf86cd799439011
+        email_address:
+          description: The email address associated with the user account. If the request is a request for an account that is not the user's, the email address will be empty for privacy reasons.
+          type: string
+          example: my.name.or.something@gmail.com
+        username:
+          description: The username associated with the account ID
+          type: string
+          example: TheOfficialFancySnail
+
+
+  #----------------------------------------------------------------------
+  # Response
+  #----------------------------------------------------------------------
+  responses:
+    # 400
+    BadRequest:
+      description: Bad Request.
+      content:
+        application/problem+json:
+          schema:
+            $ref: 'https://opensource.zalando.com/restful-api-guidelines/problem-1.0.1.yaml#/Problem'
+
+    # 404
+    NotFound:
+      description: Not Found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: 'https://opensource.zalando.com/restful-api-guidelines/problem-1.0.1.yaml#/Problem'
+
+    # 500
+    ServerError:
+      description: Internal Server Error.
+      content:
+        application/problem+json:
+          schema:
+            $ref: 'https://opensource.zalando.com/restful-api-guidelines/problem-1.0.1.yaml#/Problem'
+
+#------------------------------------------------------------------------
+# Security
+#------------------------------------------------------------------------
+security:
+  - basicAuth: [ ]
