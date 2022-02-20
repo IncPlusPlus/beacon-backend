@@ -1,0 +1,8 @@
+ProblemResponse:
+  $ref: './ProblemResponse.yml'
+ZonedDateTime:
+  $ref: "./ZonedDateTime.yml"
+CreateAccountRequest:
+  $ref: "./CreateAccountRequest.yml"
+UserAccount:
+  $ref: "./UserAccount.yml"

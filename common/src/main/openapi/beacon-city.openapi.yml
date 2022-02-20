@@ -19,7 +19,7 @@ servers:
     description: Production
 
 paths:
-  '/helloWorld':
+  '/hello-world':
     get:
       tags: [SampleText]
       description: Says "Hello, world!"
@@ -27,10 +27,6 @@ paths:
       responses:
         '200':
           description: Ok. Operation Successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HelloWorldResponse'
 
 #------------------------------------------------------------------------
 # Components
@@ -48,32 +44,20 @@ components:
   #----------------------------------------------------------------------
   # Parameter
   #----------------------------------------------------------------------
-#  parameters:
-    # No parameters yet
+  parameters:
+    $ref: "./parameters/_index.yaml"
 
   #----------------------------------------------------------------------
   # Schema
   #----------------------------------------------------------------------
   schemas:
-    #----------------------------------------------------------------------
-    # Shared Types
-    #----------------------------------------------------------------------
-    ZonedDateTime:
-      type: string
-      format: date-time
-    #----------------------------------------------------------------------
-    # Shared Properties
-    #----------------------------------------------------------------------
+    $ref: "./schemas/_index.yaml"
 
-    #----------------------------------------------------------------------
-    # Object Schemas
-    #----------------------------------------------------------------------
-    HelloWorldResponse:
-      type: object
-      properties:
-        result_text:
-          type: string
-          example: Hello, world!
+  #----------------------------------------------------------------------
+  # Response
+  #----------------------------------------------------------------------
+  responses:
+    $ref: "./responses/_index.yaml"
 
 #------------------------------------------------------------------------
 # Security
