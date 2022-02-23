@@ -5,10 +5,12 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "org.openapi.generator" version "5.4.0"
+    id "com.github.node-gradle.node" version "3.2.1"
 }
 
 ext {
-    beaconCISSpec = "${project.projectDir}/src/main/openapi/beacon-central-identity-server.openapi.yml"
+    beaconCISSpec = "${project.rootDir}/common/src/main/openapi/beacon-central-identity-server.openapi.yml"
+    bundledBeaconCISSpec = "${project.buildDir}/openapi/beacon-central-identity-server-bundled.openapi.yml"
     versionedBeaconCISSpec = "${project.buildDir}/openapi/beacon-central-identity-server-versioned.openapi.yml"
     openApiGeneratedSourceDir = "${project.buildDir}/openapi/generated-source"
     openApiGeneratedClientSourceDir = "${project.buildDir}/openapi/generated-client-source"
@@ -69,8 +71,18 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task createVersionedSpec(type: Copy) {
-    from beaconCISSpec
+task bundleSpecs(type: NpxTask) {
+    command = 'swagger-cli@4.0.4'
+    args = ['bundle',beaconCISSpec,'--outfile',bundledBeaconCISSpec,'--type','yaml']
+    inputs.files beaconCISSpec
+    outputs.files bundledBeaconCISSpec
+    doLast {
+        println "Successfully bundled specification!"
+    }
+}
+
+task createVersionedSpec(type: Copy, dependsOn: bundleSpecs) {
+    from bundledBeaconCISSpec
     into "${project.buildDir}/openapi"
     rename { String specFileName -> "beacon-central-identity-server-versioned.openapi.yml" }
     filter(ReplaceTokens, tokens: [version: project.version])

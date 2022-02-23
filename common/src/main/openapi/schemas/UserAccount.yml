@@ -1,0 +1,15 @@
+title: UserAccount
+type: object
+properties:
+  id:
+    description: The unique identifier for this account
+    type: string
+    example: 507f1f77bcf86cd799439011
+  email_address:
+    description: The email address associated with the user account. If the request is a request for an account that is not the user's, the email address will be empty for privacy reasons.
+    type: string
+    example: my.name.or.something@gmail.com
+  username:
+    description: The username associated with the account ID
+    type: string
+    example: TheOfficialFancySnail

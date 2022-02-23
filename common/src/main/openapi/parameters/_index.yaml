@@ -1,0 +1,2 @@
+user-account-id:
+  $ref: "./path/user-account-id.yml"

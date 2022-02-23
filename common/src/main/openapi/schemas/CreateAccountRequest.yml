@@ -1,0 +1,15 @@
+title: CreateAccountRequest
+type: object
+properties:
+  email_address:
+    description: The email address of the new account. It is required that this username is unique
+    type: string
+    example: my.name.or.something@gmail.com
+  username:
+    description: The username of the new account. It is required that this username is unique
+    type: string
+    example: TheOfficialFancySnail
+  password:
+    description: The password for the new account
+    type: string
+    example: BxobetM5yHoICD657VDa0kVb5c8CUT0iYoU

@@ -1,0 +1,6 @@
+name: user-account-id
+in: path
+description: The ID of a user account
+required: true
+schema:
+  type: string
