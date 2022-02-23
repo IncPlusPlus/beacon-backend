@@ -13,9 +13,9 @@ info:
 servers:
   - url: 'http://localhost:8080'
     description: localhost
-  - url: 'https://beacon-backend-main-staging.herokuapp.com:8080'
+  - url: 'https://beacon-backend-main-staging.herokuapp.com'
     description: Main branch
-  - url: 'https://beacon-backend-prod.herokuapp.com:8080'
+  - url: 'https://beacon-backend-prod.herokuapp.com'
     description: Production
 
 paths:
