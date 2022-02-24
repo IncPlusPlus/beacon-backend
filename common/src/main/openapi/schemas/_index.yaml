@@ -4,5 +4,17 @@ CreateAccountRequest:
   $ref: "./CreateAccountRequest.yml"
 UserAccount:
   $ref: "./UserAccount.yml"
+NewCity:
+  $ref: "./NewCity.yml"
+City:
+  $ref: "./City.yml"
+Tower:
+  $ref: "./Tower.yml"
+CreateTowerInviteRequest:
+  $ref: "./CreateTowerInviteRequest.yml"
+TowerInvite:
+  $ref: "./TowerInvite.yml"
+Channel:
+  $ref: "./Channel.yml"
 Message:
   $ref: "./Message.yml"

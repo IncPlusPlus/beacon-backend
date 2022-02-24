@@ -1,0 +1,25 @@
+title: Message
+type: object
+properties:
+  id:
+    description: The unique ID of this message. This does not need to have a value when creating a new message. The server will specify the ID in the returned message.
+    type: string
+    example: 507f1f77bcf86cd799439011
+  senderId:
+    description: The ID of the account that sent the message
+    type: string
+    example: 93d41fj7bcf86cd7md099011
+  sentTime:
+    description: The time that the message was sent. Or more accurately, the time that the message was received by the server.
+    type: string
+    format: date-time
+  messageBody:
+    description: The plain text message body
+    type: string
+    example: Hello, world!
+  attachments:
+    description: An array of URLs that point to the attachments that were sent in this message. If following these results in a 404, it is recommended that the client just show the URL instead of hiding the attatchments. When sending a new message, this property will always be ignored as the URLs will not yet be known until the client has POSTed to the endpoint that sends the message. Only then will the attachments be uploaded. The URLs will be provided to the client in the response.
+    type: array
+    items:
+      type: string
+    example: ["https://beacon-city.herokuapp.com/towers/towerId/uploads/messageId/imageName.png", "https://beacon-city.herokuapp.com/towers/towerId/uploads/messageId/image2.jpg"]

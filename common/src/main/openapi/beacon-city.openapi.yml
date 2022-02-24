@@ -1,8 +1,14 @@
 ---
 openapi: 3.0.1
 tags:
+  - name: Users
+    description: User-related operations
   - name: Tower Management
-    description: Join, create, edit, and delete Towers
+    description: List, join, create, edit, and delete Towers
+  - name: Channels
+    description: All APIs related to the creation, modification, and re-ordering of channels
+  - name: Messages
+    description: All APIs related to sending and retrieving messages
 info:
   title: Beacon City API
   version: '@version@'
@@ -19,14 +25,279 @@ servers:
     description: Production
 
 paths:
-  '/hello-world':
+  '/users/{user-account-id}/memberships':
+    parameters:
+      - $ref: '#/components/parameters/user-account-id'
     get:
-      tags: [SampleText]
-      description: Says "Hello, world!"
-      operationId: helloWorld
+      tags: [ Users ]
+      summary: Get Towers the user is a member of
+      operationId: getUserTowerMemberships
       responses:
         '200':
-          description: Ok. Operation Successful
+          description: Ok. Operation successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers':
+    post:
+      tags: [ Tower Management ]
+      summary: Create a new Tower
+      operationId: createTower
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tower'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ Tower Management ]
+      summary: List all known Towers
+      operationId: listTowers
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                title: TowersList
+                description: An array of Towers and their details
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/list-ids':
+    get:
+      tags: [ Tower Management ]
+      summary: List all known Towers IDs
+      operationId: listTowersIds
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                title: TowerIds
+                description: An array of Tower IDs
+                type: array
+                items:
+                  type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+    get:
+      tags: [ Tower Management ]
+      summary: Get a Tower's info by ID
+      operationId: getTowerById
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/create-invite':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+    post:
+      tags: [ Users ]
+      summary: Create an invite for this tower
+      operationId: createInvite
+      responses:
+        '201':
+          description: Created.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/channels':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+    post:
+      tags: [ Channels ]
+      summary: Create a new channel
+      operationId: createChannel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ Channels ]
+      summary: List all channels in this Tower
+      operationId: getChannels
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Channel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/channels/{channel-id}':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+      - $ref: '#/components/parameters/channel-id'
+    delete:
+      tags: [ Channels ]
+      summary: Delete a channel
+      operationId: deleteChannel
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/channels/{channel-id}/messages':
+    # TODO: Add query parameters to allow the client to fetch only the most recent N message or messages from between START and END DateTimes
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+      - $ref: '#/components/parameters/channel-id'
+    post:
+      tags: [ Messages ]
+      summary: Create and send a new message
+      operationId: createMessage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                message:
+                  $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ Messages ]
+      summary: List all messages in the given channel
+      operationId: getMessages
+      responses:
+        '200':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/channels/{channel-id}/messages/{message-id}':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+      - $ref: '#/components/parameters/channel-id'
+      - $ref: '#/components/parameters/message-id'
+    put:
+      tags: [ Messages ]
+      summary: Edit a message
+      description: This endpoint allows users to edit their messages. They will get a 401 if their credentials are wrong or if the message doesn't belong to them.
+      operationId: editMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [ Messages ]
+      summary: Delete a message
+      description: This endpoint allows users to delete their messages. They will get a 401 if their credentials are wrong or if the message doesn't belong to them. In the future, this endpoint may potentially allow admins or moderators to delete messages that don't blong to them.
+      operationId: deleteMessage
+      responses:
+        '204':
+          description: No content. Message deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
 #------------------------------------------------------------------------
 # Components

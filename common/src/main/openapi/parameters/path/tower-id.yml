@@ -1,0 +1,6 @@
+name: tower-id
+in: path
+description: The ID of a Tower
+required: true
+schema:
+  type: string

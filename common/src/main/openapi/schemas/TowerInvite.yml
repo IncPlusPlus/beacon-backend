@@ -1,0 +1,4 @@
+title: TowerInvite
+description: A unique invite code that will allow a user to join a Tower
+type: string
+example: a23c7a59-9cf0-4172-8276-dddf5b0eb868

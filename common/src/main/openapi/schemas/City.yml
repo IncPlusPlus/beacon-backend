@@ -1,0 +1,11 @@
+title: City
+type: object
+properties:
+  id:
+    description: The unique ID of this City
+    type: string
+    example: 507f1f77bcf86cd799439011
+  host:
+    description: The hostname that the city can be found at. When using the client API library, you'll need to instantiate a new instance of the API and configure it to point to this hostname if you want to interact with this City (like if you want to list its Towers).
+    type: string
+    example: https://beacon-city.herokuapp.com

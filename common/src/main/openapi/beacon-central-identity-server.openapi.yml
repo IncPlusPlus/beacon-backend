@@ -3,6 +3,12 @@ openapi: 3.0.1
 tags:
   - name: Account Management
     description: Create and edit an account + view account details by ID
+  - name: City Management
+    description: List existing Cities. Register one's self as a City
+  - name: Tower User Membership
+    description: List towers the user is a member of & join + leave them
+  - name: City Interservice Communications
+    description: These are APIs that only a City will use
 info:
   title: Beacon Central Identity Server API
   version: '@version@'
@@ -22,7 +28,7 @@ paths:
   '/account/create-new-account':
     post:
       tags: [ Account Management ]
-      description: Create a new user account
+      summary: Create a new user account
       operationId: createNewAccount
       requestBody:
         content:
@@ -44,7 +50,7 @@ paths:
   '/account/update-profile-picture':
     put:
       tags: [ Account Management ]
-      description: Upload a profile picture for the currently signed-in user. This image MUST be a PNG.
+      summary: Upload a profile picture for the currently signed-in user. This image MUST be a PNG.
       operationId: updateProfilePicture
       requestBody:
         content:
@@ -71,7 +77,7 @@ paths:
       - $ref: '#/components/parameters/user-account-id'
     get:
       tags: [ Account Management ]
-      description: Get information about the user with the specified ID
+      summary: Get information about the user with the specified ID
       operationId: getAccount
       responses:
         '200':
@@ -91,7 +97,7 @@ paths:
       - $ref: '#/components/parameters/user-account-id'
     get:
       tags: [ Account Management ]
-      description: Get the profile picture file of this specific user
+      summary: Get the profile picture file of this specific user
       operationId: getProfilePicture
       responses:
         '200':
@@ -105,6 +111,81 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: [ City Management ]
+      summary: Register a new City. The CIS will attempt to use the City's API to make sure it has a valid hostname before finishing the registration process.
+      operationId: registerCity
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewCity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/cities':
+    get:
+      tags: [ City Management ]
+      summary: List all known Cities
+      operationId: listRegisteredCities
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                title: CitiesList
+                description: An array of Cities and their details
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/join/{tower-invite-code}':
+    parameters:
+      - name: tower-invite-code
+        in: path
+        description: The invite code
+        schema:
+          $ref: '#/components/schemas/TowerInvite'
+    put:
+      tags: [ Tower User Membership ]
+      summary: Join a Tower
+      operationId: joinTowerWithInviteCode
+      responses:
+        '204':
+          description: Joined.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/generateTowerInvite':
+    post:
+      tags: [ City Interservice Communications ]
+      summary: Generate an invite
+      description: This endpoint expects a City to hit it when generating an invite code for one of its Towers. The API will persist an invite code to its database and will keep track of what user generated that invite as well as the ID of the City and Tower relevant to the request.
+      operationId: generateTowerInvite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTowerInviteRequest'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
 
