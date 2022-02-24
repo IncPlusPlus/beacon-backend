@@ -71,7 +71,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task bundleSpecs(type: NpxTask) {
+task bruh(type: NpmTask) {
+    args = ['--help']
+}
+
+task bundleSpecs(type: NpxTask, dependsOn: bruh) {
     command = 'swagger-cli@4.0.4'
     args = ['bundle',beaconCISSpec,'--outfile',bundledBeaconCISSpec,'--type','yaml']
     inputs.files beaconCISSpec
