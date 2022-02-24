@@ -1,0 +1,15 @@
+title: Channel
+type: object
+properties:
+  id:
+    description: The unique ID of this Channel
+    type: string
+    example: 507f1f77bcf86cd799439011
+  name:
+    description: The name of this channel
+    type: string
+    example: memes-and-garbage
+  order:
+    description: The numbered spot this channel should appear in when rendered in the client. This will allow tower admins to reorder channels. When creating a new channel, the client may set this to a negative value to indicate that they'd like the Tower to choose the channel position for them.
+    type: number
+    example: 6
