@@ -71,8 +71,8 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task bruh(type: NpmTask) {
-    args = ['--help']
+task bruh(type: Exec) {
+    commandLine 'uname', '-a'
 }
 
 task bundleSpecs(type: NpxTask, dependsOn: bruh) {
