@@ -1,0 +1,2 @@
+# Trying to use https://github.com/heroku/heroku-buildpack-apt to get NPM to be available at build time because for some strange reason, it isn't being done automatically in the Gradle NpxTasks
+npm
