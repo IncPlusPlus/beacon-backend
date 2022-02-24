@@ -1,6 +1,9 @@
 {
   "buildpacks": [
     {
+      "url": "https://github.com/heroku/heroku-buildpack-apt.git"
+    },
+    {
       "url": "https://github.com/heroku/heroku-buildpack-gradle.git"
     }
   ]

@@ -72,7 +72,8 @@ tasks.named('test') {
 }
 
 task bruh(type: Exec) {
-    commandLine 'uname', '-a'
+    commandLine 'which', 'npm'
+    commandLine 'which', 'npx'
 }
 
 task bundleSpecs(type: NpxTask, dependsOn: bruh) {
