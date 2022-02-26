@@ -28,14 +28,14 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
           .toAbsolutePath()
           .toFile();
 
-  private final String CIS_URL;
+  @Value("${city.cis-url:http://localhost:9876}")
+  private String CIS_URL;
+
+  @Value("${city.hostname}")
+  private String hostName;
 
   private String cityId;
   private String cityCISPassword;
-
-  public AutoRegisterCity(@Value("${city.cis-url:http://localhost:9876}") String cis_url) {
-    CIS_URL = cis_url;
-  }
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -87,7 +87,12 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
     NewCityDto credentials =
         client
             .post()
-            .uri("/city-cis-intercom/register-city")
+            .uri(
+                uriBuilder ->
+                    uriBuilder
+                        .path("/city-cis-intercom/register-city")
+                        .queryParam("city-host-name", getHostName())
+                        .build())
             .retrieve()
             .bodyToMono(NewCityDto.class)
             .block(Duration.ofSeconds(30));
@@ -111,5 +116,9 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
 
   public String getCityCISPassword() {
     return cityCISPassword;
+  }
+
+  public String getHostName() {
+    return hostName;
   }
 }

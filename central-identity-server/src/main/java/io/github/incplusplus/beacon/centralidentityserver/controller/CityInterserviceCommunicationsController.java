@@ -5,7 +5,6 @@ import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateTo
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.NewCityDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UsernameAndPasswordDto;
 import io.github.incplusplus.beacon.centralidentityserver.service.CityService;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 public class CityInterserviceCommunicationsController implements CityInterserviceCommunicationsApi {
@@ -42,14 +39,8 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
-  public ResponseEntity<NewCityDto> registerCity() {
-    HttpServletRequest req =
-        ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    String scheme = req.getScheme();
-    String serverName = req.getServerName();
-    // Assume port 8080 if doing local testing. Otherwise, this should ALWAYS be 443
-    boolean localhost = scheme.equals("http") && serverName.equals("localhost");
-    NewCityDto registered = cityService.registerNewCity(scheme, serverName, localhost);
+  public ResponseEntity<NewCityDto> registerCity(String cityHostName) {
+    NewCityDto registered = cityService.registerNewCity(cityHostName);
     return ResponseEntity.ok(registered);
   }
 

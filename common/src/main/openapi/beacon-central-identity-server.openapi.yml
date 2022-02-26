@@ -152,6 +152,13 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   '/city-cis-intercom/register-city':
+    parameters:
+      - name: city-host-name
+        in: query
+        required: true
+        description: The hostname of the city
+        schema:
+          type: string
     post:
       tags: [ City Interservice Communications ]
       summary: Register a new City

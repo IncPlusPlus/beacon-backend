@@ -31,11 +31,14 @@ public class CityService {
     this.cityMapper = cityMapper;
   }
 
-  public NewCityDto registerNewCity(String scheme, String hostname, boolean localhost) {
+  public NewCityDto registerNewCity(String hostname) {
+    boolean localhost = hostname.equals("localhost");
+    // Assume port 8080 if doing local testing. Otherwise, this should ALWAYS be 443
+    final String cityBasePath =
+        (localhost ? "http" : "https") + "://" + hostname + (localhost ? ":8080" : "");
+
     // Maybe perform an API test against the City in question before persisting anything?
     // Something for the future.
-    final String cityBasePath = scheme + "://" + hostname + (localhost ? ":8080" : "");
-
     City city;
     // Check if there's an existing city with that URL in the DB.
     // If this city merely forgot its identity, we don't want to have it lose all its information.
