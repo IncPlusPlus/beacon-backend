@@ -45,6 +45,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // For access to WebClient (see https://www.baeldung.com/spring-5-webclient)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation project(':common')
     // Required for OpenApi generator
     implementation 'org.springframework.boot:spring-boot-starter-validation'

@@ -1,5 +1,7 @@
 package io.github.incplusplus.beacon.city.config;
 
+import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
+import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,21 +21,18 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final SecurityProblemSupport problemSupport;
+  private final AutoRegisterCity autoRegisterCity;
 
   @Autowired
-  public SecurityConfig(SecurityProblemSupport problemSupport) {
+  public SecurityConfig(SecurityProblemSupport problemSupport, AutoRegisterCity autoRegisterCity) {
     super();
     this.problemSupport = problemSupport;
+    this.autoRegisterCity = autoRegisterCity;
   }
 
   @Override
-  protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-    //    auth.authenticationProvider(authProvider());
-    // TODO: Configure auth manager
-    auth.inMemoryAuthentication()
-        .withUser("user")
-        .password(encoder().encode("password"))
-        .roles("USER");
+  protected void configure(final AuthenticationManagerBuilder auth) {
+    auth.authenticationProvider(authProvider());
   }
 
   @Override
@@ -66,14 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // @formatter:on
   }
 
-  // TODO: Make a proper auth provider that sends requests to the CIS somehow
-  //  @Bean
-  //  public DaoAuthenticationProvider authProvider() {
-  //    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-  //    authProvider.setUserDetailsService(userDetailsService);
-  //    authProvider.setPasswordEncoder(encoder());
-  //    return authProvider;
-  //  }
+  @Bean
+  public LoginAuthenticationProvider authProvider() {
+    return new LoginAuthenticationProvider(autoRegisterCity);
+  }
 
   @Bean
   public PasswordEncoder encoder() {
