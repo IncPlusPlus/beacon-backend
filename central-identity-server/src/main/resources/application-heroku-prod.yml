@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://springMongoUser:${MONGODB_PASSWORD}@prodcluster0.bdjwu.mongodb.net/beacon-cis-prod?retryWrites=true&w=majority
