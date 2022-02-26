@@ -1,6 +1,12 @@
 # Stuff from the user-uploaded files directory which may become populated during development
 **/upload-dir/**
 
+# The directory where the City will keep its IDENTITY file
+**/city-private-storage/**
+
+# The directory where the City stores all public uploads
+**/city-public-storage/**
+
 # API docs static hosting
 **/resources/static/v3/api-docs.yml
 
