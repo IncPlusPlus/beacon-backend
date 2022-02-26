@@ -4,6 +4,8 @@ CreateAccountRequest:
   $ref: "./CreateAccountRequest.yml"
 UserAccount:
   $ref: "./UserAccount.yml"
+UsernameAndPassword:
+  $ref: "./UsernameAndPassword.yml"
 NewCity:
   $ref: "./NewCity.yml"
 City:

@@ -113,21 +113,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
-    post:
-      tags: [ City Management ]
-      summary: Register a new City. The CIS will attempt to use the City's API to make sure it has a valid hostname before finishing the registration process.
-      operationId: registerCity
-      responses:
-        '201':
-          description: Created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NewCity'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
   '/cities':
     get:
       tags: [ City Management ]
@@ -166,7 +151,25 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/generateTowerInvite':
+  '/city-cis-intercom/register-city':
+    post:
+      tags: [ City Interservice Communications ]
+      summary: Register a new City
+      description: Registers a new City. The CIS will attempt to use the City's API to make sure it has a valid hostname before finishing the registration process.
+      operationId: registerCity
+      security: []   # No security
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewCity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/city-cis-intercom/generate-tower-invite':
     post:
       tags: [ City Interservice Communications ]
       summary: Generate an invite
@@ -188,6 +191,24 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/city-cis-intercom/verify-user':
+    post:
+      tags: [ City Interservice Communications ]
+      summary: Verify user credentials
+      description: Verify that the credentials of a user are valid. Should this endpoint return 200, the City should remember all subsequent requests from that user and not need to consult this endpoint again.
+      operationId: verifyUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsernameAndPassword"
+      responses:
+        '200':
+          description: Credentials valid.
+        '401':
+          description: Invalid credentials
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 #------------------------------------------------------------------------
 # Components
