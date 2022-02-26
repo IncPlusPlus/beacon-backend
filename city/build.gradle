@@ -70,6 +70,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testImplementation("org.assertj:assertj-core:3.22.0")
+    // For access to MockWebServer
+    testImplementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    // For access to MockWebServer
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.3'
 }
 
 tasks.named('test') {

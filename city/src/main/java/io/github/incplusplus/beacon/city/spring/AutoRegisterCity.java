@@ -28,11 +28,14 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
           .toAbsolutePath()
           .toFile();
 
-  @Value("${city.cis-url:http://localhost:9876}")
-  private String CIS_URL;
+  private final String CIS_URL;
 
   private String cityId;
   private String cityCISPassword;
+
+  public AutoRegisterCity(@Value("${city.cis-url:http://localhost:9876}") String cis_url) {
+    CIS_URL = cis_url;
+  }
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
