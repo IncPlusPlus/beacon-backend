@@ -4,7 +4,6 @@ import java.io.IOException;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -18,17 +17,12 @@ class CityApplicationTests {
   @BeforeAll
   static void setUp() throws IOException {
     mockBackEnd = new MockWebServer();
-    mockBackEnd.start();
+    mockBackEnd.start(9876);
   }
 
   @AfterAll
   static void tearDown() throws IOException {
     mockBackEnd.shutdown();
-  }
-
-  @BeforeEach
-  void initialize() {
-    String baseUrl = String.format("http://localhost:%s", mockBackEnd.getPort());
   }
 
   @Test
