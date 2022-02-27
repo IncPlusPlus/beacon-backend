@@ -55,7 +55,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     try {
       client
           .post()
-          .uri("/verify-user")
+          .uri("/city-cis-intercom/verify-user")
           .bodyValue(new UsernameAndPasswordDto().username(name).password(password))
           .retrieve()
           .onStatus(
