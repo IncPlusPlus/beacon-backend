@@ -48,6 +48,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   public ResponseEntity<Void> verifyUser(UsernameAndPasswordDto credentials) {
     UserDetails userDetails;
     try {
+      // TODO In the future, check these for null. Otherwise, a 500 happens.
       userDetails = userDetailsService.loadUserByUsername(credentials.getUsername());
     } catch (UsernameNotFoundException e) {
       return ResponseEntity.notFound().build();
