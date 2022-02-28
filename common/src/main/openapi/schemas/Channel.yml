@@ -5,6 +5,9 @@ properties:
     description: The unique ID of this Channel
     type: string
     example: 507f1f77bcf86cd799439011
+  tower_id:
+    description: The ID of the tower this channel belongs to
+    type: string
   name:
     description: The name of this channel
     type: string
