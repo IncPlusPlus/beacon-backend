@@ -5,15 +5,21 @@ properties:
     description: The unique ID of this message. This does not need to have a value when creating a new message. The server will specify the ID in the returned message.
     type: string
     example: 507f1f77bcf86cd799439011
-  senderId:
+  channel_id:
+    description: The ID of the channel that this message was sent in.
+    type: string
+  tower_id:
+    description: the ID of the tower that contains the channel this message was sent in
+    type: string
+  sender_id:
     description: The ID of the account that sent the message
     type: string
     example: 93d41fj7bcf86cd7md099011
-  sentTime:
+  sent_time:
     description: The time that the message was sent. Or more accurately, the time that the message was received by the server.
     type: string
     format: date-time
-  messageBody:
+  message_body:
     description: The plain text message body
     type: string
     example: Hello, world!
