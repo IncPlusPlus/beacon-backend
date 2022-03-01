@@ -3,7 +3,7 @@ openapi: 3.0.1
 tags:
   - name: Users
     description: User-related operations
-  - name: Tower Management
+  - name: Towers
     description: List, join, create, edit, and delete Towers
   - name: Channels
     description: All APIs related to the creation, modification, and re-ordering of channels
@@ -49,7 +49,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   '/towers':
     post:
-      tags: [ Tower Management ]
+      tags: [ Towers ]
       summary: Create a new Tower
       operationId: createTower
       requestBody:
@@ -69,7 +69,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     get:
-      tags: [ Tower Management ]
+      tags: [ Towers ]
       summary: List all known Towers
       operationId: listTowers
       responses:
@@ -89,7 +89,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   '/towers/list-ids':
     get:
-      tags: [ Tower Management ]
+      tags: [ Towers ]
       summary: List all known Towers IDs
       operationId: listTowersIds
       responses:
@@ -111,7 +111,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/tower-id'
     get:
-      tags: [ Tower Management ]
+      tags: [ Towers ]
       summary: Get a Tower's info by ID
       operationId: getTowerById
       responses:

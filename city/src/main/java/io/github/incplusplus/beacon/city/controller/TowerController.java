@@ -1,6 +1,6 @@
 package io.github.incplusplus.beacon.city.controller;
 
-import io.github.incplusplus.beacon.city.generated.controller.TowerManagementApi;
+import io.github.incplusplus.beacon.city.generated.controller.TowersApi;
 import io.github.incplusplus.beacon.city.generated.dto.TowerDto;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class TowerManagementController implements TowerManagementApi {
+public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> createTower(TowerDto towerDto) {
