@@ -119,7 +119,7 @@ task generateServerStubs(type: GenerateTask, dependsOn: createVersionedSpec) {
             'performBeanValidation'  : 'true',
     ]
     typeMappings = [
-            'DateTime': 'ZonedDateTime',
+            'DateTime': 'Instant',
     ]
     importMappings = [
             'Instant'      : 'java.time.Instant',
