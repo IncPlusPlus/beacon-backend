@@ -199,19 +199,31 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   '/city-cis-intercom/verify-user':
-    post:
+    parameters:
+      - name: username
+        in: query
+        required: true
+        description: The username of the user in question
+        schema:
+          type: string
+      - name: password
+        in: query
+        required: true
+        description: The password of the user in question
+        schema:
+          type: string
+    get:
       tags: [ City Interservice Communications ]
       summary: Verify user credentials
       description: Verify that the credentials of a user are valid. Should this endpoint return 200, the City should remember all subsequent requests from that user and not need to consult this endpoint again.
       operationId: verifyUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UsernameAndPassword"
       responses:
         '200':
           description: Credentials valid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
         '401':
           description: Invalid credentials
         '404':
