@@ -1,6 +1,5 @@
 package io.github.incplusplus.beacon.city.service;
 
-import com.google.common.collect.Streams;
 import io.github.incplusplus.beacon.city.generated.dto.MessageDto;
 import io.github.incplusplus.beacon.city.mapper.MessageMapper;
 import io.github.incplusplus.beacon.city.persistence.dao.ChannelRepository;
@@ -67,7 +66,7 @@ public class MessageService {
   }
 
   public List<MessageDto> getMessages(String towerId, String channelId) {
-    return Streams.stream(messageRepository.findAll())
+    return messageRepository.findAllByTowerIdAndChannelId(towerId, channelId).stream()
         .map(messageMapper::messageToMessageDto)
         .collect(Collectors.toList());
   }
