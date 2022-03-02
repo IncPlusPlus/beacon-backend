@@ -66,6 +66,12 @@ public class MessageService {
   }
 
   public List<MessageDto> getMessages(String towerId, String channelId) {
+    if (!towerRepository.existsById(towerId)) { // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
     return messageRepository.findAllByTowerIdAndChannelId(towerId, channelId).stream()
         .map(messageMapper::messageToMessageDto)
         .collect(Collectors.toList());
