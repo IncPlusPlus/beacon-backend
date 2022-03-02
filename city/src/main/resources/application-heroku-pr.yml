@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://springMongoUser:${MONGODB_PASSWORD}@beacon-east.lw78i.mongodb.net/${HEROKU_APP_NAME}?retryWrites=true&w=majority
+city:
+  cis-url: https://beacon-cis-pr-${HEROKU_PR_NUMBER}.herokuapp.com
+  hostname: ${HEROKU_APP_NAME}.herokuapp.com

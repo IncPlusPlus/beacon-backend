@@ -56,9 +56,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // @formatter:off
     http.csrf().disable()
         .authorizeRequests()
-          .antMatchers("/account/createNewAccount").permitAll()
+          .antMatchers("/account/create-new-account").permitAll()
+          .antMatchers("/city-cis-intercom/register-city").permitAll()
           .antMatchers("/invalidSession*").anonymous()
-          .anyRequest().authenticated()
+          .antMatchers("/city-cis-intercom/**").hasRole("CITY")
+          .anyRequest().hasRole("USER")
           .and()
         .httpBasic().authenticationEntryPoint(problemSupport)
           .and()

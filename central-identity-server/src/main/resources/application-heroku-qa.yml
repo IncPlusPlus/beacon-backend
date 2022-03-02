@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://springMongoUser:${MONGODB_PASSWORD}@beacon-east.lw78i.mongodb.net/beacon-cis-main-staging?retryWrites=true&w=majority

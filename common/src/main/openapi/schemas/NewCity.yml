@@ -1,0 +1,11 @@
+title: NewCity
+type: object
+properties:
+  id:
+    description: The unique ID of this newly-created City
+    type: string
+    example: 507f1f77bcf86cd799439011
+  password:
+    description: The password the City should specify when interacting with the CIS API
+    type: string
+    example: k3ndicv09nmakjauos89vcipoualk321bm412m4bmaklasdf

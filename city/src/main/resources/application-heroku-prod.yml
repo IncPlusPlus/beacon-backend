@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://springMongoUser:${MONGODB_PASSWORD}@prodcluster0.bdjwu.mongodb.net/beacon-city-prod?retryWrites=true&w=majority
+city:
+  cis-url: https://beacon-cis.herokuapp.com
+  hostname: beacon-city.herokuapp.com
