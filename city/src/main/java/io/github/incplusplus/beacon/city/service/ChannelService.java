@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.city.persistence.dao.ChannelRepository;
 import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Channel;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,18 @@ public class ChannelService {
   private final TowerRepository towerRepository;
   private final ChannelRepository channelRepository;
   private final ChannelMapper channelMapper;
+  private final MessageService messageService;
 
   @Autowired
   public ChannelService(
       TowerRepository towerRepository,
       ChannelRepository channelRepository,
-      ChannelMapper channelMapper) {
+      ChannelMapper channelMapper,
+      MessageService messageService) {
     this.towerRepository = towerRepository;
     this.channelRepository = channelRepository;
     this.channelMapper = channelMapper;
+    this.messageService = messageService;
   }
 
   @Transactional
@@ -44,5 +48,21 @@ public class ChannelService {
     return Streams.stream(channelRepository.findAll())
         .map(channelMapper::channelToChannelDto)
         .collect(Collectors.toList());
+  }
+
+  @Transactional
+  public Optional<ChannelDto> deleteChannel(String towerId, String channelId) {
+    if (!towerRepository.existsById(towerId)) { // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
+    Optional<Channel> deleted = channelRepository.deleteByIdAndTowerId(channelId, towerId);
+    if (deleted.isEmpty()) {
+      return Optional.empty();
+    }
+    messageService.deleteAllByChannelId(channelId);
+    return Optional.ofNullable(channelMapper.channelToChannelDto(deleted.get()));
   }
 }

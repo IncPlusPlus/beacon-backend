@@ -70,4 +70,13 @@ public class MessageService {
         .map(messageMapper::messageToMessageDto)
         .collect(Collectors.toList());
   }
+
+  /**
+   * For internal use only.
+   *
+   * @param channelId the channel id to look for when deleting messages
+   */
+  public void deleteAllByChannelId(String channelId) {
+    messageRepository.deleteAllByChannelId(channelId);
+  }
 }
