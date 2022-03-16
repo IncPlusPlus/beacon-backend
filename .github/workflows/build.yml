@@ -5,6 +5,7 @@ on:
     branches: '**'
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,3 +37,60 @@ jobs:
           files: ./city/build/reports/jacoco/test/jacocoTestReport.xml
           flags: city
           name: City
+
+      - name: Upload JARs
+        uses: actions/upload-artifact@v3
+        with:
+          name: jars
+          path: ./**/build/libs/*.jar
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+      - name: Upload OpenAPI generated clients
+        uses: actions/upload-artifact@v3
+        with:
+          name: clients
+          path: ./**/build/openapi/generated-client-source
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
+  cis_heroku_deploy:
+    name: Deploy CIS to Heroku
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy new CIS instance to Heroku
+        # TODO: Switch back from experiment to main-staging if/when this is merged
+        run: heroku jar:deploy central-identity-server/build/libs/central-identity-server.jar -a beacon-cis-experiment
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+  city_heroku_deploy:
+    name: Deploy City to Heroku
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy new City instance to Heroku
+        # TODO: Switch back from experiment to main-staging if/when this is merged
+        run: heroku jar:deploy city/build/libs/city.jar -a beacon-city-experiment
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+  cis_npm_deploy:
+    name: Publish CIS library to NPM
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish client lib for Central Identity Server
+        # TODO: Remove --dry-run if/when this gets merged
+        run: npm publish ./central-identity-server/build/openapi/generated-client-source --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  city_npm_deploy:
+    name: Publish City library to NPM
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish client lib for City
+        # TODO: Remove --dry-run if/when this gets merged
+        run: npm publish ./city/build/openapi/generated-client-source --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
