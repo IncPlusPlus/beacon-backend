@@ -1,11 +1,15 @@
 package io.github.incplusplus.beacon.centralidentityserver.service;
 
+import com.google.common.collect.Streams;
+import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CityDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.NewCityDto;
 import io.github.incplusplus.beacon.centralidentityserver.mapper.CityMapper;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.dao.CityRepository;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.model.City;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,5 +65,11 @@ public class CityService {
     newCity.setPassword(passwordRaw);
     log.debug("Successfully registered new City with ID '" + newCity.getId() + "'.");
     return newCity;
+  }
+
+  public List<CityDto> getCities() {
+    return Streams.stream(cityRepository.findAll())
+        .map(cityMapper::cityToCityDto)
+        .collect(Collectors.toList());
   }
 }
