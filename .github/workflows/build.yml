@@ -56,6 +56,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download JARs
+        uses: actions/download-artifact@v3
+        with:
+          name: jars
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - name: Install the Java plugin
+        run: heroku plugins:install java
       - name: Deploy new CIS instance to Heroku
         # TODO: Switch back from experiment to main-staging if/when this is merged
         run: heroku jar:deploy central-identity-server/build/libs/central-identity-server.jar -a beacon-cis-experiment
@@ -67,6 +75,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download JARs
+        uses: actions/download-artifact@v3
+        with:
+          name: jars
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+      - name: Install the Java plugin
+        run: heroku plugins:install java
       - name: Deploy new City instance to Heroku
         # TODO: Switch back from experiment to main-staging if/when this is merged
         run: heroku jar:deploy city/build/libs/city.jar -a beacon-city-experiment
@@ -78,6 +94,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download clients
+        uses: actions/download-artifact@v3
+        with:
+          name: clients
       - name: Publish client lib for Central Identity Server
         # TODO: Remove --dry-run if/when this gets merged
         run: npm publish ./central-identity-server/build/openapi/generated-client-source --dry-run
@@ -89,6 +109,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download clients
+        uses: actions/download-artifact@v3
+        with:
+          name: clients
       - name: Publish client lib for City
         # TODO: Remove --dry-run if/when this gets merged
         run: npm publish ./city/build/openapi/generated-client-source --dry-run

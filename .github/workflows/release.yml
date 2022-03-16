@@ -19,10 +19,6 @@ jobs:
         with:
           distribution: liberica
           java-version: 17
-      - name: Install Heroku CLI
-        run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
-      - name: Install the Java plugin
-        run: heroku plugins:install java
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
