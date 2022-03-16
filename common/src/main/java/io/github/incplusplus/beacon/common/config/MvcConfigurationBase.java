@@ -3,6 +3,7 @@ package io.github.incplusplus.beacon.common.config;
 import java.io.IOException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -13,6 +14,20 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
  * it. Be sure to annotate your subclass with the {@link Configuration} annotation.
  */
 public class MvcConfigurationBase implements WebMvcConfigurer {
+
+  /**
+   * https://www.baeldung.com/spring-cors#1-javaconfig
+   *
+   * @param registry the registry
+   */
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry
+        .addMapping("/**")
+        .allowedMethods("*")
+        .allowedOriginPatterns("*")
+        .allowCredentials(true);
+  }
 
   /**
    * The way the Swagger UI is rendered is by reading the OpenAPI specification YAML file. The way

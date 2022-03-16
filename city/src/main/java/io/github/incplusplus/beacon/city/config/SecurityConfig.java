@@ -63,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .authenticationEntryPoint(problemSupport)
           .accessDeniedHandler(problemSupport);
     // @formatter:on
+    // https://www.baeldung.com/spring-cors#cors-with-spring-security
+    http.cors();
   }
 
   @Bean
