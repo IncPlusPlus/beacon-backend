@@ -24,8 +24,7 @@ public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> getTowerById(String towerId) {
-    // TODO: Implement
-    return null;
+    return ResponseEntity.of(towerService.getTower(towerId));
   }
 
   @Override
