@@ -72,4 +72,8 @@ public class CityService {
         .map(cityMapper::cityToCityDto)
         .collect(Collectors.toList());
   }
+
+  public Optional<CityDto> getCity(String cityId) {
+    return cityRepository.findById(cityId).map(cityMapper::cityToCityDto);
+  }
 }

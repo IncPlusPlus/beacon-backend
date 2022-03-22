@@ -133,6 +133,24 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/cities/{city-id}':
+    parameters:
+      - $ref: '#/components/parameters/city-id'
+    get:
+      tags: [ City Management ]
+      summary: Get a City by ID
+      operationId: getCity
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/join/{tower-invite-code}':
     parameters:
       - name: tower-invite-code

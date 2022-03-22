@@ -16,6 +16,11 @@ public class CityManagementController implements CityManagementApi {
   }
 
   @Override
+  public ResponseEntity<CityDto> getCity(String cityId) {
+    return ResponseEntity.of(cityService.getCity(cityId));
+  }
+
+  @Override
   public ResponseEntity<List<CityDto>> listRegisteredCities() {
     return ResponseEntity.ok(cityService.getCities());
   }
