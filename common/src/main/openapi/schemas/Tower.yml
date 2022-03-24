@@ -22,3 +22,8 @@ properties:
     type: array
     items:
       type: string
+  member_account_ids:
+    description: The account IDs of the members of this Tower.
+    type: array
+    items:
+      type: string

@@ -125,6 +125,65 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [ Towers ]
+      summary: Delete a tower
+      operationId: deleteTower
+      responses:
+        '200':
+          description: Deleted.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/membership':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+    get:
+      tags: [ Towers ]
+      summary: Check if you're the member of a tower
+      operationId: checkIfMemberOfTower
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: [ Towers ]
+      summary: Join a tower
+      operationId: joinTower
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [ Towers ]
+      summary: Leave a tower
+      operationId: leaveTower
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/towers/{tower-id}/create-invite':
     parameters:
       - $ref: '#/components/parameters/tower-id'
