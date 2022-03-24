@@ -6,6 +6,7 @@ import io.github.incplusplus.beacon.centralidentityserver.generated.dto.NewCityD
 import io.github.incplusplus.beacon.centralidentityserver.mapper.CityMapper;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.dao.CityRepository;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.model.City;
+import io.github.incplusplus.beacon.centralidentityserver.persistence.model.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,13 +27,18 @@ public class CityService {
   private final PasswordEncoder passwordEncoder;
 
   private final CityMapper cityMapper;
+  private final UserService userService;
 
   @Autowired
   public CityService(
-      CityRepository cityRepository, PasswordEncoder passwordEncoder, CityMapper cityMapper) {
+      CityRepository cityRepository,
+      PasswordEncoder passwordEncoder,
+      CityMapper cityMapper,
+      UserService userService) {
     this.cityRepository = cityRepository;
     this.passwordEncoder = passwordEncoder;
     this.cityMapper = cityMapper;
+    this.userService = userService;
   }
 
   public NewCityDto registerNewCity(String hostname) {
@@ -75,5 +81,57 @@ public class CityService {
 
   public Optional<CityDto> getCity(String cityId) {
     return cityRepository.findById(cityId).map(cityMapper::cityToCityDto);
+  }
+
+  public List<String> addCityMembers(String cityId, List<String> userIds) {
+    Optional<City> cityOptional = cityRepository.findById(cityId);
+    if (cityOptional.isEmpty()) {
+      // TODO: Make a proper exception for this
+      throw new RuntimeException("City not found.");
+    }
+    City city = cityOptional.get();
+    city.getMemberUsers().addAll(userIds);
+    return cityRepository.save(city).getMemberUsers();
+  }
+
+  public List<String> setCityMembers(String cityId, List<String> cityMembers) {
+    Optional<City> cityOptional = cityRepository.findById(cityId);
+    if (cityOptional.isEmpty()) {
+      // TODO: Make a proper exception for this
+      throw new RuntimeException("City not found.");
+    }
+    City city = cityOptional.get();
+    city.setMemberUsers(cityMembers);
+    return cityRepository.save(city).getMemberUsers();
+  }
+
+  public List<String> getCityMembers(String cityId) {
+    Optional<City> cityOptional = cityRepository.findById(cityId);
+    if (cityOptional.isEmpty()) {
+      // TODO: Make a proper exception for this
+      throw new RuntimeException("City not found.");
+    }
+    return cityOptional.get().getMemberUsers();
+  }
+
+  public List<String> removeCityMembers(String cityId, List<String> userIds) {
+    Optional<City> cityOptional = cityRepository.findById(cityId);
+    if (cityOptional.isEmpty()) {
+      // TODO: Make a proper exception for this
+      throw new RuntimeException("City not found.");
+    }
+    City city = cityOptional.get();
+    city.getMemberUsers().removeAll(userIds);
+    return cityRepository.save(city).getMemberUsers();
+  }
+
+  public List<CityDto> listCitiesMemberOf(String username) {
+    // If we're already here, we know this username exists.
+    // No need to bother with checking if the Optional exists.
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    User user = userService.getAccountByUsername(username).get();
+    return cityRepository.findAllByMemberUsersContains(user.getId()).stream()
+        .map(cityMapper::cityToCityDto)
+        .toList();
   }
 }

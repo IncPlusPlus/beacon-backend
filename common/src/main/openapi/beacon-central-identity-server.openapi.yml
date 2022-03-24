@@ -4,7 +4,7 @@ tags:
   - name: Account Management
     description: Create and edit an account + view account details by ID
   - name: City Management
-    description: List existing Cities. Register one's self as a City
+    description: List existing Cities.
   - name: Tower User Membership
     description: List towers the user is a member of & join + leave them
   - name: City Interservice Communications
@@ -133,6 +133,33 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/cities/memberships':
+    get:
+      tags: [ City Management ]
+      summary: List the Cities the user is a "member" of
+      description: |
+        The "member users" of the City are a *fake* concept that exist to assist the frontend in
+        discovering what Towers the user is a member of. Towards that end, the CIS keeps track of
+        what Cities exist and whether the user is a member of _any of the Towers created within
+        that City._ The fact that the CIS has this information allows for the frontend to find out
+        all the Cities that are relevant to the user and then the frontend itself will ask each
+        of those Cities which of its Towers the user is a member of.
+      operationId: listCitiesMemberOf
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                title: CitiesList
+                description: An array of Cities and their details
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/cities/{city-id}':
     parameters:
       - $ref: '#/components/parameters/city-id'
@@ -246,6 +273,88 @@ paths:
           description: Invalid credentials
         '404':
           $ref: '#/components/responses/NotFound'
+  '/city-cis-intercom/memberships':
+    get:
+      tags: [ City Interservice Communications ]
+      summary: Get the "member users" of this City
+      description: See the description of `/cities/memberships` for more information on what it means for a City to "have members"
+      operationId: getCityMembers
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags: [ City Interservice Communications ]
+      summary: Add one or more members to this City
+      description: See the description of `/cities/memberships` for more information on what it means for a City to "have members". The request body should be one or more IDs of users who are now a member of one or more Towers within this City.
+      operationId: addCityMembers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityMembers'
+      responses:
+        '201':
+          description: Updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityMembers'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags: [ City Interservice Communications ]
+      summary: Set members of this city
+      description: See the description of `/cities/memberships` for more information on what it means for a City to "have members". The request body represents the ID(s) to set as the **ONLY** members of any Towers within this City. This is like the `PUT` method of this endpoint but it replaces the member IDs list instead of adding individual user IDs.
+      operationId: setCityMembers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityMembers'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityMembers'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [ City Interservice Communications ]
+      summary: Remove one or more members from this city
+      description: See the description of `/cities/memberships` for more information on what it means for a City to "have members". The request body represents the ID(s) of one or more users who are no longer a member of any Tower within this City.
+      operationId: removeCityMembers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CityMembers'
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CityMembers'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
 #------------------------------------------------------------------------
 # Components
