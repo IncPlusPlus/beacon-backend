@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.centralidentityserver.mapper.CityMapper;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.dao.CityRepository;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.model.City;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.model.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,6 +66,9 @@ public class CityService {
     // A UUID should work decently well for a password I suppose.
     String passwordRaw = UUID.randomUUID().toString();
     city.setPassword(passwordEncoder.encode(passwordRaw));
+    // The City needs to have the members list initialized. Otherwise, it'll be null and cause
+    // problems for us when we want to retrieve the list and modify it.
+    city.setMemberUsers(new ArrayList<>());
     NewCityDto newCity = cityMapper.cityToNewCityDto(cityRepository.save(city));
     // We don't want to send back the encoded password.
     // Otherwise, the City won't ever be able to authenticate properly
