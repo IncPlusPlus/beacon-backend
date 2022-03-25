@@ -59,6 +59,7 @@ public class ChannelService {
       throw new RuntimeException("Channel not found");
     }
     Optional<Channel> deleted = channelRepository.deleteByIdAndTowerId(channelId, towerId);
+    // TODO: Delete all messages that were in chis channel.
     if (deleted.isEmpty()) {
       return Optional.empty();
     }
