@@ -25,9 +25,14 @@ servers:
     description: Production
 
 paths:
-  '/users/{user-account-id}/memberships':
+  '/memberships':
     parameters:
-      - $ref: '#/components/parameters/user-account-id'
+      - name: user-account-id
+        in: query
+        description: The ID of a user. If empty or not specified, will default to the user sending this request.
+        required: false
+        schema:
+          type: string
     get:
       tags: [ Users ]
       summary: Get Towers the user is a member of

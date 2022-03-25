@@ -66,7 +66,19 @@ public class TowerService {
     return towerDto;
   }
 
-  public List<TowerDto> getTowersUserIsMemberOf(String userAccountId) {
+  /**
+   * Get the list of Towers the specified user is a member of
+   *
+   * @param usernameOrAccountId the username or account ID of the target user
+   * @param isUsername true if {@code usernameOrAccountId} is being provided a username, false if it
+   *     is a user ID
+   * @return a list of Towers that the specified user is a member of
+   */
+  public List<TowerDto> getTowersUserIsMemberOf(String usernameOrAccountId, boolean isUsername) {
+    String userAccountId =
+        isUsername
+            ? loginAuthenticationProvider.getIdForUsername(usernameOrAccountId)
+            : usernameOrAccountId;
     return towerRepository.findAllByMemberAccountIdsContains(userAccountId).stream()
         .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()))
         .collect(Collectors.toList());
