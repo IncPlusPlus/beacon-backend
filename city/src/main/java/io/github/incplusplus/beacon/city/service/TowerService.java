@@ -53,20 +53,22 @@ public class TowerService {
 
   public List<TowerDto> getTowers() {
     return Streams.stream(towerRepository.findAll())
-        .map(towerMapper::towerToTowerDto)
+        .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()))
         .collect(Collectors.toList());
   }
 
   public Optional<TowerDto> getTower(String towerId) {
     Optional<TowerDto> towerDto =
-        towerRepository.findById(towerId).map(towerMapper::towerToTowerDto);
+        towerRepository
+            .findById(towerId)
+            .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()));
     towerDto.ifPresent(dto -> dto.setCityId(autoRegisterCity.getCityId()));
     return towerDto;
   }
 
   public List<TowerDto> getTowersUserIsMemberOf(String userAccountId) {
     return towerRepository.findAllByMemberAccountIdsContains(userAccountId).stream()
-        .map(towerMapper::towerToTowerDto)
+        .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()))
         .collect(Collectors.toList());
   }
 
@@ -116,7 +118,7 @@ public class TowerService {
     }
     // endregion
     tower.getMemberAccountIds().add(userId);
-    return towerMapper.towerToTowerDto(towerRepository.save(tower));
+    return towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
   }
 
   public TowerDto leaveTower(String username, String towerId) {
@@ -157,7 +159,7 @@ public class TowerService {
     }
     // endregion
     tower.getMemberAccountIds().remove(userId);
-    return towerMapper.towerToTowerDto(towerRepository.save(tower));
+    return towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
   }
 
   public void deleteTower(String towerId) {

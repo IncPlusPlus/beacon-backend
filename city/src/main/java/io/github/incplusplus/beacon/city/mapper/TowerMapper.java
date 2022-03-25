@@ -11,15 +11,19 @@ public interface TowerMapper {
   @Mapping(target = "channels", ignore = true)
   Tower towerDtoToTower(TowerDto towerDto);
 
-  /*
-  TODO: The city ID is something that isn't persisted. Instead, It's retrieved from the IDENTITY file.
-   Because of this, we will set the cityId field manually just before returning the DTO.
-   Look into whether MapStruct will let us do this by having a second parameter to this method
-   that allows for the manual specification of a field. If not, also see if we can provide an
-   implementation for this method that uses as much of the automated part as possible and manually
-   assigns the cityId with the second parameter. Until this is done, some of the endpoints will
-   return Towers without a cityId which will probably cause issues with the frontend.
+  /**
+   * Map a Tower internal document to a Tower DTO.
+   *
+   * <p>The city ID is something that isn't persisted. Instead, It's retrieved from the IDENTITY
+   * file. Because of this, we will set the cityId field manually just before returning the DTO.
+   *
+   * @param tower a Tower that is being transformed to a DTO
+   * @param cityId the ID of the City this Tower belongs to (should always be THIS City's ID)
+   * @return a TowerDto representing the Tower document
+   * @see <a
+   *     href="https://mapstruct.org/documentation/stable/reference/html/#mappings-with-several-source-parameters">MapStruct
+   *     documentation on multiple parameters</a>
    */
-  @Mapping(target = "cityId", ignore = true)
-  TowerDto towerToTowerDto(Tower tower);
+  @Mapping(source = "cityId", target = "cityId")
+  TowerDto towerToTowerDto(Tower tower, String cityId);
 }
