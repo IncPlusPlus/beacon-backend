@@ -30,7 +30,8 @@ public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> createTower(TowerDto towerDto) {
-    return ResponseEntity.ok(towerService.createTower(towerDto));
+    return ResponseEntity.ok(
+        towerService.createTower(authenticationFacade.getAuthentication().getName(), towerDto));
   }
 
   @Override
