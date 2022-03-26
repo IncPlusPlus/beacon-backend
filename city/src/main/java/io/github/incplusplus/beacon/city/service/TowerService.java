@@ -41,6 +41,8 @@ public class TowerService {
 
   public TowerDto createTower(String username, TowerDto towerDto) {
     String userId = loginAuthenticationProvider.getIdForUsername(username);
+    // Set the Tower creator as the admin of this Tower
+    towerDto.setAdminAccountId(userId);
     // Initialize member IDs
     towerDto.setMemberAccountIds(new ArrayList<>());
     // Initialize moderator ID list
