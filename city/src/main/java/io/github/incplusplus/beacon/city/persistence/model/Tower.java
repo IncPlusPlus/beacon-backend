@@ -20,6 +20,7 @@ public class Tower {
   private String name;
   private String adminAccountId;
   private List<String> moderatorAccountIds = null;
+  private List<String> memberAccountIds;
 
   @ReadOnlyProperty
   @DocumentReference(lookup = "{'towerId':?#{#self._id} }")

@@ -43,6 +43,9 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
       return;
     }
 
+    // TODO: Even if the IDENTITY file exists, we should still check with the CIS if these
+    // credentials
+    //  are still valid.
     log.info("Checking if this City has been assigned an identity...");
     // Check if saved ID and password exist locally
     if (identityFile.exists()) {
