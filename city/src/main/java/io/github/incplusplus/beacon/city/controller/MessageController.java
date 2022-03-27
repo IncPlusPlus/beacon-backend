@@ -5,6 +5,7 @@ import io.github.incplusplus.beacon.city.generated.dto.MessageDto;
 import io.github.incplusplus.beacon.city.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.city.service.MessageService;
 import java.util.List;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,14 +39,14 @@ public class MessageController implements MessagesApi {
   public ResponseEntity<MessageDto> deleteMessage(
       String towerId, String channelId, String messageId) {
     // TODO: Implement
-    return null;
+    throw new NotImplementedException("Logic to delete messages not implemented yet.");
   }
 
   @Override
   public ResponseEntity<MessageDto> editMessage(
       String towerId, String channelId, String messageId, MessageDto messageDto) {
     // TODO: Implement
-    return null;
+    throw new NotImplementedException("Logic to edit messages not implemented yet.");
   }
 
   @Override

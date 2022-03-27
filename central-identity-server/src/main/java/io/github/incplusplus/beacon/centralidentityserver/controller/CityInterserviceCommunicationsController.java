@@ -9,6 +9,7 @@ import io.github.incplusplus.beacon.centralidentityserver.security.IAuthenticati
 import io.github.incplusplus.beacon.centralidentityserver.service.CityService;
 import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
 import java.util.List;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   public ResponseEntity<String> generateTowerInvite(
       CreateTowerInviteRequestDto createTowerInviteRequestDto) {
     // TODO Implement this
-    return null;
+    throw new NotImplementedException("Logic to generate Tower invites not implemented yet.");
   }
 
   @Override

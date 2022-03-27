@@ -5,6 +5,7 @@ import io.github.incplusplus.beacon.city.generated.dto.TowerDto;
 import io.github.incplusplus.beacon.city.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.city.service.TowerService;
 import java.util.List;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -65,6 +66,7 @@ public class TowerController implements TowersApi {
   @Override
   public ResponseEntity<List<String>> listTowersIds() {
     // TODO: Implement
-    return null;
+    throw new NotImplementedException(
+        "The endpoint to list tower IDs isn't implemented yet. I might not even bother with it since we don't seem to have a use for it.");
   }
 }

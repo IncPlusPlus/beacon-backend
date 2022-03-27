@@ -5,6 +5,7 @@ import io.github.incplusplus.beacon.city.generated.dto.TowerDto;
 import io.github.incplusplus.beacon.city.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.city.service.TowerService;
 import java.util.List;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class UserController implements UsersApi {
   @Override
   public ResponseEntity<String> createInvite(String towerId) {
     // TODO Implement
-    return null;
+    throw new NotImplementedException("Logic to generate Tower invites not implemented yet.");
   }
 
   @Override
