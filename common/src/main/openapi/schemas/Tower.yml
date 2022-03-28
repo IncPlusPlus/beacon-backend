@@ -5,6 +5,10 @@ properties:
     description: The unique ID of this Tower
     type: string
     example: 507f1f77bcf86cd799439011
+  city_id:
+    description: The ID of the City that this Tower belongs to
+    type: string
+    example: 507f1f77bcf86cd799439011
   name:
     description: The name of this tower
     type: string
@@ -15,6 +19,11 @@ properties:
     example: 507f1f77bcf86cd799439011
   moderator_account_ids:
     description: The account IDs of the moderators of the Tower. This isn't important at the moment but could be useful for the future if we have time to add some very basic permissions stuff.
+    type: array
+    items:
+      type: string
+  member_account_ids:
+    description: The account IDs of the members of this Tower.
     type: array
     items:
       type: string

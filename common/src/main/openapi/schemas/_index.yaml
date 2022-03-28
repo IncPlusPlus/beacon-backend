@@ -18,3 +18,5 @@ Channel:
   $ref: "./Channel.yml"
 Message:
   $ref: "./Message.yml"
+CityMembers:
+  $ref: "./CityMembers.yml"

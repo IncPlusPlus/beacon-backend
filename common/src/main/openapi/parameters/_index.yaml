@@ -6,3 +6,5 @@ channel-id:
   $ref: "./path/channel-id.yml"
 message-id:
   $ref: "./path/message-id.yml"
+city-id:
+  $ref: "./path/city-id.yml"

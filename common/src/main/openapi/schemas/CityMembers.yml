@@ -1,0 +1,5 @@
+title: CityMembers
+description: A list of IDs representing the users who exist within one or more Towers contained within this City
+type: array
+items:
+  type: string

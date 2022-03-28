@@ -1,5 +1,6 @@
 package io.github.incplusplus.beacon.centralidentityserver.mapper;
 
+import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CityDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.NewCityDto;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.model.City;
 import org.mapstruct.Mapper;
@@ -8,4 +9,6 @@ import org.mapstruct.Mapper;
 public interface CityMapper {
 
   NewCityDto cityToNewCityDto(City save);
+
+  CityDto cityToCityDto(City city);
 }

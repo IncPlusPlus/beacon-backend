@@ -1,0 +1,6 @@
+name: city-id
+in: path
+description: The ID of a City
+required: true
+schema:
+  type: string
