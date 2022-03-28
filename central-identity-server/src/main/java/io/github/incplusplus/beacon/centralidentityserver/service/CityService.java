@@ -66,9 +66,16 @@ public class CityService {
     // A UUID should work decently well for a password I suppose.
     String passwordRaw = UUID.randomUUID().toString();
     city.setPassword(passwordEncoder.encode(passwordRaw));
-    // The City needs to have the members list initialized. Otherwise, it'll be null and cause
-    // problems for us when we want to retrieve the list and modify it.
-    city.setMemberUsers(new ArrayList<>());
+    /*
+    This will be null in the case of a new City. However, if an old City lost its identity and
+    tried to re-establish itself (like what happens with Heroku apps that have temporary storage
+    which is wiped when they are suspended), we don't want to wipe out the existing members list.
+     */
+    if (city.getMemberUsers() == null) {
+      // The City needs to have the members list initialized. Otherwise, it'll be null and cause
+      // problems for us when we want to retrieve the list and modify it.
+      city.setMemberUsers(new ArrayList<>());
+    }
     NewCityDto newCity = cityMapper.cityToNewCityDto(cityRepository.save(city));
     // We don't want to send back the encoded password.
     // Otherwise, the City won't ever be able to authenticate properly
