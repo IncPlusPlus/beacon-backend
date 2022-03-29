@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.city.service.MessageService;
 import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,13 +27,14 @@ public class MessageController implements MessagesApi {
   @Override
   public ResponseEntity<MessageDto> createMessage(
       String towerId, String channelId, List<MultipartFile> attachments, MessageDto message) {
-    return ResponseEntity.ok(
+    return new ResponseEntity<>(
         messageService.createMessage(
             authenticationFacade.getAuthentication().getName(),
             towerId,
             channelId,
             attachments,
-            message));
+            message),
+        HttpStatus.CREATED);
   }
 
   @Override

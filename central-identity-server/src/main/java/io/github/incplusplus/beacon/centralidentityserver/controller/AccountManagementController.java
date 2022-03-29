@@ -10,6 +10,7 @@ import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,7 @@ public class AccountManagementController implements AccountManagementApi {
         "Successfully created new account with email '{}' and username '{}'.",
         registered.getEmailAddress(),
         registered.getUsername());
-    return ResponseEntity.ok(registered);
+    return new ResponseEntity<>(registered, HttpStatus.CREATED);
   }
 
   @Override

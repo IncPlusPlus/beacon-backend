@@ -5,6 +5,7 @@ import io.github.incplusplus.beacon.city.generated.dto.ChannelDto;
 import io.github.incplusplus.beacon.city.service.ChannelService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -18,7 +19,8 @@ public class ChannelController implements ChannelsApi {
 
   @Override
   public ResponseEntity<ChannelDto> createChannel(String towerId, ChannelDto channelDto) {
-    return ResponseEntity.ok(channelService.createChannel(towerId, channelDto));
+    return new ResponseEntity<>(
+        channelService.createChannel(towerId, channelDto), HttpStatus.CREATED);
   }
 
   @Override

@@ -67,7 +67,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   @Override
   public ResponseEntity<NewCityDto> registerCity(String cityHostName) {
     NewCityDto registered = cityService.registerNewCity(cityHostName);
-    return ResponseEntity.ok(registered);
+    return new ResponseEntity<>(registered, HttpStatus.CREATED);
   }
 
   @Override
@@ -78,9 +78,9 @@ public class CityInterserviceCommunicationsController implements CityInterservic
 
   @Override
   public ResponseEntity<List<String>> setCityMembers(List<String> cityMembers) {
-    return ResponseEntity.ok(
-        cityService.setCityMembers(
-            authenticationFacade.getAuthentication().getName(), cityMembers));
+    return new ResponseEntity<>(
+        cityService.setCityMembers(authenticationFacade.getAuthentication().getName(), cityMembers),
+        HttpStatus.CREATED);
   }
 
   @Override

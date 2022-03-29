@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.city.service.TowerService;
 import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -31,8 +32,9 @@ public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> createTower(TowerDto towerDto) {
-    return ResponseEntity.ok(
-        towerService.createTower(authenticationFacade.getAuthentication().getName(), towerDto));
+    return new ResponseEntity<>(
+        towerService.createTower(authenticationFacade.getAuthentication().getName(), towerDto),
+        HttpStatus.CREATED);
   }
 
   @Override
@@ -48,8 +50,9 @@ public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> joinTower(String towerId) {
-    return ResponseEntity.ok(
-        towerService.joinTower(authenticationFacade.getAuthentication().getName(), towerId));
+    return new ResponseEntity<>(
+        towerService.joinTower(authenticationFacade.getAuthentication().getName(), towerId),
+        HttpStatus.CREATED);
   }
 
   @Override
