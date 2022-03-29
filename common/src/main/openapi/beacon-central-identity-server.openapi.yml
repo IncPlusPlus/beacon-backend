@@ -345,12 +345,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CityMembers'
       responses:
-        '200':
-          description: Deleted.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CityMembers'
+        '204':
+          description: Deleted, no content.
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':

@@ -135,7 +135,7 @@ public class TowerService {
     return towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
   }
 
-  public TowerDto leaveTower(String username, String towerId) {
+  public void leaveTower(String username, String towerId) {
     String userId = loginAuthenticationProvider.getIdForUsername(username);
     Optional<Tower> towerOptional = towerRepository.findById(towerId);
     if (towerOptional.isEmpty()) {
@@ -167,13 +167,13 @@ public class TowerService {
                 .block(Duration.ofSeconds(30));
       } catch (Exception e) {
         // TODO: Make a proper exception that reflects that the City-to-CIS communication failed. It
-        // should cause a 500 error as this is an internal issue.
+        //  should cause a 500 error as this is an internal issue.
         throw new RuntimeException(e);
       }
     }
     // endregion
     tower.getMemberAccountIds().remove(userId);
-    return towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
+    towerRepository.save(tower);
   }
 
   public void deleteTower(String towerId) {

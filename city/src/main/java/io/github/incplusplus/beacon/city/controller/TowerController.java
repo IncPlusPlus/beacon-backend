@@ -53,9 +53,9 @@ public class TowerController implements TowersApi {
   }
 
   @Override
-  public ResponseEntity<TowerDto> leaveTower(String towerId) {
-    return ResponseEntity.ok(
-        towerService.leaveTower(authenticationFacade.getAuthentication().getName(), towerId));
+  public ResponseEntity<Void> leaveTower(String towerId) {
+    towerService.leaveTower(authenticationFacade.getAuthentication().getName(), towerId);
+    return ResponseEntity.noContent().build();
   }
 
   @Override

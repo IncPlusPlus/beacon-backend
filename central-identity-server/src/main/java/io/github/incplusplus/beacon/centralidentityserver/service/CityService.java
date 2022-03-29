@@ -125,7 +125,7 @@ public class CityService {
     return cityOptional.get().getMemberUsers();
   }
 
-  public List<String> removeCityMembers(String cityId, List<String> userIds) {
+  public void removeCityMembers(String cityId, List<String> userIds) {
     Optional<City> cityOptional = cityRepository.findById(cityId);
     if (cityOptional.isEmpty()) {
       // TODO: Make a proper exception for this
@@ -133,7 +133,7 @@ public class CityService {
     }
     City city = cityOptional.get();
     city.getMemberUsers().removeAll(userIds);
-    return cityRepository.save(city).getMemberUsers();
+    cityRepository.save(city);
   }
 
   public List<CityDto> listCitiesMemberOf(String username) {

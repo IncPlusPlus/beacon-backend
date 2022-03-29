@@ -51,19 +51,20 @@ public class ChannelService {
   }
 
   @Transactional
-  public Optional<ChannelDto> deleteChannel(String towerId, String channelId) {
-    if (!towerRepository.existsById(towerId)) { // TODO: Make a proper exception
+  public void deleteChannel(String towerId, String channelId) {
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
       throw new RuntimeException("Tower not found");
     }
-    if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
+    Optional<Channel> targetChannel = channelRepository.findById(channelId);
+    if (targetChannel.isEmpty()) {
       throw new RuntimeException("Channel not found");
     }
-    Optional<Channel> deleted = channelRepository.deleteByIdAndTowerId(channelId, towerId);
-    // TODO: Delete all messages that were in chis channel.
-    if (deleted.isEmpty()) {
-      return Optional.empty();
+    if (!targetChannel.get().getTowerId().equals(towerId)) {
+      throw new RuntimeException("Channel exists but is not part of tower with ID " + towerId);
     }
+    channelRepository.deleteById(channelId);
+    // Delete all messages that were in chis channel.
     messageService.deleteAllByChannelId(channelId);
-    return Optional.ofNullable(channelMapper.channelToChannelDto(deleted.get()));
   }
 }

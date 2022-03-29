@@ -71,9 +71,9 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
-  public ResponseEntity<List<String>> removeCityMembers(List<String> userIds) {
-    return ResponseEntity.ok(
-        cityService.removeCityMembers(authenticationFacade.getAuthentication().getName(), userIds));
+  public ResponseEntity<Void> removeCityMembers(List<String> userIds) {
+    cityService.removeCityMembers(authenticationFacade.getAuthentication().getName(), userIds);
+    return ResponseEntity.noContent().build();
   }
 
   @Override
