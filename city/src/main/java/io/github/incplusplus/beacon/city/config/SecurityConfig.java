@@ -46,7 +46,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // For access to /v3/api-docs/swagger-config
         .antMatchers("/v3/api-docs/**")
         // For access to /v3/api-docs.yml
-        .antMatchers("/v3/api-docs.yml");
+        .antMatchers("/v3/api-docs.yml")
+        // For access to websocket endpoints (see
+        // io.github.incplusplus.beacon.city.websocket.config.WebSocketConfig#registerStompEndpoints)
+        .antMatchers("/beacon-ws/**");
   }
 
   @Override
