@@ -14,5 +14,5 @@ properties:
     example: memes-and-garbage
   order:
     description: The numbered spot this channel should appear in when rendered in the client. This will allow tower admins to reorder channels. When creating a new channel, the client may set this to a negative value to indicate that they'd like the Tower to choose the channel position for them.
-    type: number
+    type: integer
     example: 6
