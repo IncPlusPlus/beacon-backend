@@ -27,6 +27,12 @@ public class ChannelController implements ChannelsApi {
   }
 
   @Override
+  public ResponseEntity<ChannelDto> editChannel(
+      String towerId, String channelId, ChannelDto channelDto) {
+    return ResponseEntity.ok(channelService.editChannel(towerId, channelId, channelDto));
+  }
+
+  @Override
   public ResponseEntity<List<ChannelDto>> getChannels(String towerId) {
     return ResponseEntity.ok(channelService.getChannels());
   }
