@@ -9,6 +9,7 @@ import io.github.incplusplus.beacon.city.persistence.model.Message;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,25 @@ public class MessageService {
     return messageRepository.findAllByTowerIdAndChannelId(towerId, channelId).stream()
         .map(messageMapper::messageToMessageDto)
         .collect(Collectors.toList());
+  }
+
+  public Optional<MessageDto> editMessage(String messageId, MessageDto messageDto) {
+    Optional<Message> messageOptional = messageRepository.findById(messageId);
+    if (messageOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    Message message = messageOptional.get();
+    // Users may only edit the message body. We don't let them sneakily modify any other fields
+    message.setMessageBody(messageDto.getMessageBody());
+    // Save the edited message and convert the resulting object into a DTO
+    MessageDto editedDto = messageMapper.messageToMessageDto(messageRepository.save(message));
+    // Return the DTO
+    return Optional.of(editedDto);
+  }
+
+  public Optional<MessageDto> deleteMessage(String messageId) {
+    Optional<Message> deletedOptional = messageRepository.deleteMessageById(messageId);
+    return deletedOptional.map(messageMapper::messageToMessageDto);
   }
 
   /**
