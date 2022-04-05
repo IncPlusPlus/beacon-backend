@@ -66,4 +66,25 @@ public class ChannelService {
     messageService.deleteAllByChannelId(channelId);
     return Optional.ofNullable(channelMapper.channelToChannelDto(deleted.get()));
   }
+
+  public ChannelDto editChannel(String towerId, String channelId, ChannelDto channelDto) {
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    if (!channelRepository.existsById(channelId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
+    Optional<Channel> channelOptional = channelRepository.findById(channelId);
+    if (channelOptional.isEmpty()) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
+    Channel existingChannel = channelOptional.get();
+    existingChannel.setName(channelDto.getName());
+    existingChannel.setOrder(channelDto.getOrder());
+    existingChannel = channelRepository.save(existingChannel);
+    return channelMapper.channelToChannelDto(existingChannel);
+  }
 }

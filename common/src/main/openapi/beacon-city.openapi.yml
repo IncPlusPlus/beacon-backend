@@ -266,6 +266,26 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+    put:
+      tags: [ Channels ]
+      summary: Modify a channel
+      operationId: editChannel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Channel'
+      responses:
+        '200':
+          description: Modified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/towers/{tower-id}/channels/{channel-id}/messages':
     # TODO: Add query parameters to allow the client to fetch only the most recent N message or messages from between START and END DateTimes
     parameters:
