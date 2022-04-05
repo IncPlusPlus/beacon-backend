@@ -58,7 +58,7 @@ public class ChannelService {
     if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
       throw new RuntimeException("Channel not found");
     }
-    Optional<Channel> deleted = channelRepository.deleteByIdAndTowerId(channelId, towerId);
+    Optional<Channel> deleted = channelRepository.deleteChannelById(channelId);
     // TODO: Delete all messages that were in chis channel.
     if (deleted.isEmpty()) {
       return Optional.empty();
