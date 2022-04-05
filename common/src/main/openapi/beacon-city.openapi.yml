@@ -370,8 +370,8 @@ paths:
       description: This endpoint allows users to delete their messages. They will get a 401 if their credentials are wrong or if the message doesn't belong to them. In the future, this endpoint may potentially allow admins or moderators to delete messages that don't blong to them.
       operationId: deleteMessage
       responses:
-        '204':
-          description: No content. Message deleted.
+        '200':
+          description: Ok. Message deleted.
           content:
             application/json:
               schema:

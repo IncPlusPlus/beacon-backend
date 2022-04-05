@@ -6,6 +6,7 @@ import io.github.incplusplus.beacon.city.mapper.ChannelMapper;
 import io.github.incplusplus.beacon.city.persistence.dao.ChannelRepository;
 import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Channel;
+import io.github.incplusplus.beacon.city.websocket.notifier.ChannelNotifier;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,17 +21,20 @@ public class ChannelService {
   private final ChannelRepository channelRepository;
   private final ChannelMapper channelMapper;
   private final MessageService messageService;
+  private final ChannelNotifier channelNotifier;
 
   @Autowired
   public ChannelService(
       TowerRepository towerRepository,
       ChannelRepository channelRepository,
       ChannelMapper channelMapper,
-      MessageService messageService) {
+      MessageService messageService,
+      ChannelNotifier channelNotifier) {
     this.towerRepository = towerRepository;
     this.channelRepository = channelRepository;
     this.channelMapper = channelMapper;
     this.messageService = messageService;
+    this.channelNotifier = channelNotifier;
   }
 
   @Transactional
@@ -41,7 +45,9 @@ public class ChannelService {
     Channel newChannel = channelMapper.channelDtoToChannel(channelDto);
     newChannel.setTowerId(towerId);
     newChannel = channelRepository.save(newChannel);
-    return channelMapper.channelToChannelDto(newChannel);
+    ChannelDto newChannelDto = channelMapper.channelToChannelDto(newChannel);
+    channelNotifier.notifyNewChannel(newChannelDto);
+    return newChannelDto;
   }
 
   public List<ChannelDto> getChannels() {
@@ -55,16 +61,12 @@ public class ChannelService {
     if (!towerRepository.existsById(towerId)) { // TODO: Make a proper exception
       throw new RuntimeException("Tower not found");
     }
-    if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
-      throw new RuntimeException("Channel not found");
-    }
-    Optional<Channel> deleted = channelRepository.deleteByIdAndTowerId(channelId, towerId);
-    // TODO: Delete all messages that were in chis channel.
-    if (deleted.isEmpty()) {
-      return Optional.empty();
-    }
-    messageService.deleteAllByChannelId(channelId);
-    return Optional.ofNullable(channelMapper.channelToChannelDto(deleted.get()));
+    Optional<ChannelDto> deleted =
+        channelRepository.deleteChannelById(channelId).map(channelMapper::channelToChannelDto);
+    deleted.ifPresent(channelNotifier::notifyDeletedChannel);
+    // Delete all messages that were in chis channel.
+    deleted.ifPresent(channelDto -> messageService.deleteAllByChannelId(channelId));
+    return deleted;
   }
 
   public ChannelDto editChannel(String towerId, String channelId, ChannelDto channelDto) {
@@ -85,6 +87,8 @@ public class ChannelService {
     existingChannel.setName(channelDto.getName());
     existingChannel.setOrder(channelDto.getOrder());
     existingChannel = channelRepository.save(existingChannel);
-    return channelMapper.channelToChannelDto(existingChannel);
+    ChannelDto existingChannelDto = channelMapper.channelToChannelDto(existingChannel);
+    channelNotifier.notifyEditedChannel(existingChannelDto);
+    return existingChannelDto;
   }
 }
