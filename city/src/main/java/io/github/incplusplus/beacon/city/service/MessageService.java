@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.city.persistence.dao.MessageRepository;
 import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Message;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
+import io.github.incplusplus.beacon.city.websocket.notifier.MessageNotifier;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class MessageService {
   private final MessageRepository messageRepository;
   private final MessageMapper messageMapper;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
+  private final MessageNotifier messageNotifier;
 
   @Autowired
   public MessageService(
@@ -30,12 +32,14 @@ public class MessageService {
       ChannelRepository channelRepository,
       MessageRepository messageRepository,
       MessageMapper messageMapper,
-      LoginAuthenticationProvider loginAuthenticationProvider) {
+      LoginAuthenticationProvider loginAuthenticationProvider,
+      MessageNotifier messageNotifier) {
     this.towerRepository = towerRepository;
     this.channelRepository = channelRepository;
     this.messageRepository = messageRepository;
     this.messageMapper = messageMapper;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
+    this.messageNotifier = messageNotifier;
   }
 
   public MessageDto createMessage(
@@ -62,8 +66,10 @@ public class MessageService {
     // TODO: Deal with saving attachments and generating the URLs for them.
     //  These URLs will then populate the array of attachment URLs in the entity.
     newMessage = messageRepository.save(newMessage);
-    // TODO: Kick off any tasks needed here for the websocket notification about a new message
-    return messageMapper.messageToMessageDto(newMessage);
+    MessageDto newMessageDto = messageMapper.messageToMessageDto(newMessage);
+    // Kick off any tasks needed here for the websocket notification about a new message
+    messageNotifier.notifyNewMessage(newMessageDto);
+    return newMessageDto;
   }
 
   public List<MessageDto> getMessages(String towerId, String channelId) {
@@ -78,7 +84,16 @@ public class MessageService {
         .collect(Collectors.toList());
   }
 
-  public Optional<MessageDto> editMessage(String messageId, MessageDto messageDto) {
+  public Optional<MessageDto> editMessage(
+      String towerId, String channelId, String messageId, MessageDto messageDto) {
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    if (!channelRepository.existsById(channelId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
     Optional<Message> messageOptional = messageRepository.findById(messageId);
     if (messageOptional.isEmpty()) {
       return Optional.empty();
@@ -88,13 +103,26 @@ public class MessageService {
     message.setMessageBody(messageDto.getMessageBody());
     // Save the edited message and convert the resulting object into a DTO
     MessageDto editedDto = messageMapper.messageToMessageDto(messageRepository.save(message));
+    // Notify all subscribed clients that this message has been edited
+    messageNotifier.notifyEditedMessage(editedDto);
     // Return the DTO
     return Optional.of(editedDto);
   }
 
-  public Optional<MessageDto> deleteMessage(String messageId) {
-    Optional<Message> deletedOptional = messageRepository.deleteMessageById(messageId);
-    return deletedOptional.map(messageMapper::messageToMessageDto);
+  public Optional<MessageDto> deleteMessage(String towerId, String channelId, String messageId) {
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    if (!channelRepository.existsById(channelId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Channel not found");
+    }
+    Optional<MessageDto> deletedOptional =
+        messageRepository.deleteMessageById(messageId).map(messageMapper::messageToMessageDto);
+    // If it's not empty, we proceed to return the deleted message and dispatch the notification
+    deletedOptional.ifPresent(messageNotifier::notifyDeletedMessage);
+    return deletedOptional;
   }
 
   /**

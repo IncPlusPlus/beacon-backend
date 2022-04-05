@@ -39,7 +39,7 @@ public class MessageController implements MessagesApi {
       String towerId, String channelId, String messageId) {
     // TODO: This lacks proper authorization checks. Someone messing with our API could delete the
     //  messages of another user. Fix that at some point.
-    return ResponseEntity.of(messageService.deleteMessage(messageId));
+    return ResponseEntity.of(messageService.deleteMessage(towerId, channelId, messageId));
   }
 
   @Override
@@ -47,7 +47,7 @@ public class MessageController implements MessagesApi {
       String towerId, String channelId, String messageId, MessageDto messageDto) {
     // TODO: This lacks proper authorization checks. Someone messing with our API could delete the
     //  messages of another user. Fix that at some point.
-    return ResponseEntity.of(messageService.editMessage(messageId, messageDto));
+    return ResponseEntity.of(messageService.editMessage(towerId, channelId, messageId, messageDto));
   }
 
   @Override
