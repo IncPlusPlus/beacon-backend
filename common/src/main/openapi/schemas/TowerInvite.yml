@@ -34,10 +34,9 @@ properties:
     type: integer
     example: 5
   expiry_date:
-    description: The date this invite becomes invalid and therefore no longer usable
+    description: The date this invite becomes invalid and therefore no longer usable. If this property is null, there is no expiry date and the invite will be valid unless it hits its user limit or has been revoked.
     type: string
     format: date-time
-    nullable: true
   revoked:
     description: If true, an administrator of the Tower this invite goes to has revoked this invite, making it unusuable.
     type: boolean

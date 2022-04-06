@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 @Document
 @Getter
@@ -22,6 +23,6 @@ public class TowerInvite {
   private Instant dateCreated;
   private int uses;
   private int maxUses;
-  private Instant expiryDate;
+  @Nullable private Instant expiryDate;
   private boolean revoked;
 }
