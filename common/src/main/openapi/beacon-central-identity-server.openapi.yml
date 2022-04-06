@@ -250,11 +250,6 @@ paths:
       summary: Use an invite
       description: Uses an invite. A City will call this endpoint when a user requests to join one of its Towers. This endpoint will return error 400 if the invite is expired or revoked and 200 if the invite is valid and the City should proceed to allow a user to join the Tower the invite is for. The number of uses of the invite will increment by 1 when calling this endpoint.
       operationId: useInvite
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TowerInvite'
       responses:
         '201':
           description: Updated. If this is returned, it means that the invite is valid and the City should proceed to allow the user to join the Tower the invite is for. The number of uses of this invite will be incremented by 1.

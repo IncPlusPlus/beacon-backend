@@ -94,8 +94,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
-  public ResponseEntity<TowerInviteDto> useInvite(
-      String towerInviteCode, TowerInviteDto towerInviteDto) {
+  public ResponseEntity<TowerInviteDto> useInvite(String towerInviteCode) {
     // TODO: Implement using invites
     return null;
   }
