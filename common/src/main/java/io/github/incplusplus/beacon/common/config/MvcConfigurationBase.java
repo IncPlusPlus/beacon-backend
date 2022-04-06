@@ -45,6 +45,7 @@ public class MvcConfigurationBase implements WebMvcConfigurer {
     registry
         .addResourceHandler("/v3/api-docs.yml")
         .addResourceLocations("classpath:/static")
+        .setCachePeriod(0)
         .resourceChain(true)
         .addResolver(
             new PathResourceResolver() {
