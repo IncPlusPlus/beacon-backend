@@ -1,4 +1,44 @@
 title: TowerInvite
 description: A unique invite code that will allow a user to join a Tower
-type: string
-example: a23c7a59-9cf0-4172-8276-dddf5b0eb868
+type: object
+properties:
+  invite_code:
+    description: The unique code that represents this invite
+    type: string
+    example: 98hXPn
+    readOnly: true
+  inviter:
+    description: The ID of the user who created this invite
+    type: string
+    example: 6232581118c51d73251ffe86
+  tower_id:
+    description: The ID of the Tower this invite corresponds to
+    type: string
+    readOnly: true
+  city_id:
+    description: The ID of the City that the relevant Tower resides in
+    type: string
+    readOnly: true
+  date_created:
+    description: the date this invite was created
+    type: string
+    format: date-time
+    readOnly: true
+  uses:
+    description: The number of times this invite has been used
+    type: integer
+    example: 3
+    readOnly: true
+  max_uses:
+    description: The number of times this invite is allowed to be used. If zero, this invite may be used infinitely many times.
+    type: integer
+    example: 5
+  expiry_date:
+    description: The date this invite becomes invalid and therefore no longer usable
+    type: string
+    format: date-time
+    nullable: true
+  revoked:
+    description: If true, an administrator of the Tower this invite goes to has revoked this invite, making it unusuable.
+    type: boolean
+    readOnly: true

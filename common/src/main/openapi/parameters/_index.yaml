@@ -8,3 +8,5 @@ message-id:
   $ref: "./path/message-id.yml"
 city-id:
   $ref: "./path/city-id.yml"
+tower-invite-code:
+  $ref: "./path/tower-invite-code.yml"

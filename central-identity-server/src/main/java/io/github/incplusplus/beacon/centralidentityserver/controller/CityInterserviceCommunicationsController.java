@@ -1,15 +1,14 @@
 package io.github.incplusplus.beacon.centralidentityserver.controller;
 
 import io.github.incplusplus.beacon.centralidentityserver.generated.controller.CityInterserviceCommunicationsApi;
-import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateTowerInviteRequestDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.NewCityDto;
+import io.github.incplusplus.beacon.centralidentityserver.generated.dto.TowerInviteDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAccountDto;
 import io.github.incplusplus.beacon.centralidentityserver.mapper.UserMapper;
 import io.github.incplusplus.beacon.centralidentityserver.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.centralidentityserver.service.CityService;
 import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
 import java.util.List;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,16 +51,21 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
-  public ResponseEntity<String> generateTowerInvite(
-      CreateTowerInviteRequestDto createTowerInviteRequestDto) {
-    // TODO Implement this
-    throw new NotImplementedException("Logic to generate Tower invites not implemented yet.");
+  public ResponseEntity<TowerInviteDto> generateInvite(TowerInviteDto towerInviteDto) {
+    // TODO: Implement generating invites
+    return null;
   }
 
   @Override
   public ResponseEntity<List<String>> getCityMembers() {
     return ResponseEntity.ok(
         cityService.getCityMembers(authenticationFacade.getAuthentication().getName()));
+  }
+
+  @Override
+  public ResponseEntity<TowerInviteDto> getInvitesForTower(String towerId) {
+    // TODO: Implement finding all invites relevant to the city + tower asking about them
+    return null;
   }
 
   @Override
@@ -77,10 +81,23 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
+  public ResponseEntity<TowerInviteDto> revokeInvite(String towerInviteCode) {
+    // TODO: Implement revoking an invite
+    return null;
+  }
+
+  @Override
   public ResponseEntity<List<String>> setCityMembers(List<String> cityMembers) {
     return ResponseEntity.ok(
         cityService.setCityMembers(
             authenticationFacade.getAuthentication().getName(), cityMembers));
+  }
+
+  @Override
+  public ResponseEntity<TowerInviteDto> useInvite(
+      String towerInviteCode, TowerInviteDto towerInviteDto) {
+    // TODO: Implement using invites
+    return null;
   }
 
   @Override
