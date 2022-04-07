@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAcco
 import io.github.incplusplus.beacon.centralidentityserver.mapper.UserMapper;
 import io.github.incplusplus.beacon.centralidentityserver.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.centralidentityserver.service.CityService;
+import io.github.incplusplus.beacon.centralidentityserver.service.TowerInviteService;
 import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   private final PasswordEncoder passwordEncoder;
   private final CityService cityService;
   private final UserService userService;
+  private final TowerInviteService inviteService;
   private final UserMapper userMapper;
 
   @Autowired
@@ -35,12 +37,14 @@ public class CityInterserviceCommunicationsController implements CityInterservic
       PasswordEncoder passwordEncoder,
       CityService cityService,
       UserService userService,
+      TowerInviteService inviteService,
       UserMapper userMapper) {
     this.userDetailsService = userDetailsService;
     this.authenticationFacade = authenticationFacade;
     this.passwordEncoder = passwordEncoder;
     this.cityService = cityService;
     this.userService = userService;
+    this.inviteService = inviteService;
     this.userMapper = userMapper;
   }
 
@@ -52,8 +56,9 @@ public class CityInterserviceCommunicationsController implements CityInterservic
 
   @Override
   public ResponseEntity<TowerInviteDto> generateInvite(TowerInviteDto towerInviteDto) {
-    // TODO: Implement generating invites
-    return null;
+    return ResponseEntity.ok(
+        inviteService.createInvite(
+            authenticationFacade.getAuthentication().getName(), towerInviteDto));
   }
 
   @Override
@@ -64,8 +69,9 @@ public class CityInterserviceCommunicationsController implements CityInterservic
 
   @Override
   public ResponseEntity<List<TowerInviteDto>> getInvitesForTower(String towerId) {
-    // TODO: Implement finding all invites relevant to the city + tower asking about them
-    return null;
+    return ResponseEntity.ok(
+        inviteService.getInvitesForCityAndTower(
+            authenticationFacade.getAuthentication().getName(), towerId));
   }
 
   @Override
@@ -82,8 +88,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
 
   @Override
   public ResponseEntity<TowerInviteDto> revokeInvite(String towerInviteCode) {
-    // TODO: Implement revoking an invite
-    return null;
+    return ResponseEntity.of(inviteService.revokeInvite(towerInviteCode));
   }
 
   @Override
@@ -95,8 +100,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
 
   @Override
   public ResponseEntity<TowerInviteDto> useInvite(String towerInviteCode) {
-    // TODO: Implement using invites
-    return null;
+    return ResponseEntity.of(inviteService.incrementInviteUsesIfAllowed(towerInviteCode));
   }
 
   @Override
