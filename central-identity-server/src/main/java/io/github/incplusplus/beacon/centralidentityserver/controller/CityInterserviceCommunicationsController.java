@@ -63,7 +63,7 @@ public class CityInterserviceCommunicationsController implements CityInterservic
   }
 
   @Override
-  public ResponseEntity<TowerInviteDto> getInvitesForTower(String towerId) {
+  public ResponseEntity<List<TowerInviteDto>> getInvitesForTower(String towerId) {
     // TODO: Implement finding all invites relevant to the city + tower asking about them
     return null;
   }

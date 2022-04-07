@@ -237,7 +237,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TowerInvite'
+                type: array
+                items:
+                  $ref: '#/components/schemas/TowerInvite'
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
