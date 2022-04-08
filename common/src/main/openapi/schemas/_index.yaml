@@ -10,8 +10,6 @@ City:
   $ref: "./City.yml"
 Tower:
   $ref: "./Tower.yml"
-CreateTowerInviteRequest:
-  $ref: "./CreateTowerInviteRequest.yml"
 TowerInvite:
   $ref: "./TowerInvite.yml"
 Channel:

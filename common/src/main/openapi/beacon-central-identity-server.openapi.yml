@@ -5,8 +5,8 @@ tags:
     description: Create and edit an account + view account details by ID
   - name: City Management
     description: List existing Cities.
-  - name: Tower User Membership
-    description: List towers the user is a member of & join + leave them
+  - name: Invites
+    description: User-accessible APIs having to do with Tower invites
   - name: City Interservice Communications
     description: These are APIs that only a City will use
 info:
@@ -178,20 +178,103 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/join/{tower-invite-code}':
+  '/invites/{tower-invite-code}':
     parameters:
-      - name: tower-invite-code
-        in: path
-        description: The invite code
-        schema:
-          $ref: '#/components/schemas/TowerInvite'
-    put:
-      tags: [ Tower User Membership ]
-      summary: Join a Tower
-      operationId: joinTowerWithInviteCode
+      - $ref: '#/components/parameters/tower-invite-code'
+    get:
+      tags: [ Invites ]
+      summary: Get information necessary for the client to join a Tower
+      description: While the City is able to communicate with the CIS, the CIS isn't able to send any requests to the City. Unfortunately, this means we can't just make a user join a server by redeeming an invite with a single request. Instead, a client should hit this endpoint to ask the CIS for information about the invite itself. The CIS will tell the client the invite's City. The client will then send a PUT to /invites/{tower-invite-code} on the City to complete the joining process. That City will plop the user into the Tower the invite was for.
+      operationId: getInviteInfo
       responses:
-        '204':
-          description: Joined.
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/city-cis-intercom/invites':
+    post:
+      tags: [ City Interservice Communications ]
+      summary: Create a new invite for a Tower
+      operationId: generateInvite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TowerInvite'
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ City Interservice Communications ]
+      summary: Find all the invites for a given tower
+      operationId: getInvitesForTower
+      parameters:
+        - name: tower-id
+          in: query
+          description: The ID of a Tower
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/city-cis-intercom/invites/{tower-invite-code}':
+    parameters:
+      - $ref: '#/components/parameters/tower-invite-code'
+    put:
+      tags: [ City Interservice Communications ]
+      summary: Use an invite
+      description: Uses an invite. A City will call this endpoint when a user requests to join one of its Towers. This endpoint will return error 400 if the invite is expired or revoked and 200 if the invite is valid and the City should proceed to allow a user to join the Tower the invite is for. The number of uses of the invite will increment by 1 when calling this endpoint.
+      operationId: useInvite
+      responses:
+        '201':
+          description: Updated. If this is returned, it means that the invite is valid and the City should proceed to allow the user to join the Tower the invite is for. The number of uses of this invite will be incremented by 1.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags: [ City Interservice Communications ]
+      summary: Revoke an invite
+      description: Calling this endpoint will revoke the specified invite, making it unusable even if it hasn't yet expired or reached its max number of uses
+      operationId: revokeInvite
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':
@@ -217,28 +300,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NewCity'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
-  '/city-cis-intercom/generate-tower-invite':
-    post:
-      tags: [ City Interservice Communications ]
-      summary: Generate an invite
-      description: This endpoint expects a City to hit it when generating an invite code for one of its Towers. The API will persist an invite code to its database and will keep track of what user generated that invite as well as the ID of the City and Tower relevant to the request.
-      operationId: generateTowerInvite
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTowerInviteRequest'
-      responses:
-        '201':
-          description: Created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TowerInvite'
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':

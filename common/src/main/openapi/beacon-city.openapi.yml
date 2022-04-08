@@ -9,6 +9,8 @@ tags:
     description: All APIs related to the creation, modification, and re-ordering of channels
   - name: Messages
     description: All APIs related to sending and retrieving messages
+  - name: Invites
+    description: All APIs related to the management of invite codes
 info:
   title: Beacon City API
   version: '@version@'
@@ -189,20 +191,95 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/towers/{tower-id}/create-invite':
+  '/towers/{tower-id}/invites':
     parameters:
       - $ref: '#/components/parameters/tower-id'
     post:
-      tags: [ Users ]
+      tags: [ Invites ]
       summary: Create an invite for this tower
       operationId: createInvite
+      parameters:
+        - name: expiry-time
+          in: query
+          description: The amount of time until this invite should expire. Set this to 0 for the invite to never expire (unless manually revoked)
+          required: true
+          schema:
+            type: integer
+        - name: expiry-time-unit
+          in: query
+          description: The unit to provide context for the value of expiry-time
+          required: true
+          schema:
+            type: string
+            enum:
+              - MINUTES
+              - HOURS
+              - DAYS
+        - name: max-uses
+          in: query
+          description: The number of times this invite is allowed to be used before expiring. Set to 0 to allow for infinite uses. You may still manually revoke this invite at a later time if you so desire.
+          required: true
+          schema:
+            type: integer
       responses:
         '201':
           description: Created.
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ Invites ]
+      summary: List all invites that have been created for this Tower
+      operationId: listInvites
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/towers/{tower-id}/invites/{tower-invite-code}':
+    parameters:
+      - $ref: '#/components/parameters/tower-id'
+      - $ref: '#/components/parameters/tower-invite-code'
+    delete:
+      tags: [ Invites ]
+      summary: Revoke an invite
+      operationId: revokeInvite
+      description: Calling this endpoint will revoke the specified invite, making it unusable even if it hasn't yet expired or reached its max number of uses
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TowerInvite'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/invites/{tower-invite-code}':
+    parameters:
+      - $ref: '#/components/parameters/tower-invite-code'
+    put:
+      tags: [ Invites ]
+      summary: Use an invite
+      operationId: joinUsingInvite
+      description: Use the provided invite code to join a Tower in this City. If the Tower the invite is for does not exist here, a 400 will be returned.
+      responses:
+        '204':
+          description: Joined.
         '400':
           $ref: '#/components/responses/BadRequest'
         '500':

@@ -1,0 +1,7 @@
+name: tower-invite-code
+in: path
+description: The unique code that represents a Tower invite
+required: true
+example: 98hXPn
+schema:
+  type: string
