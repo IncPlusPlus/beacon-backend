@@ -1,6 +1,5 @@
 package io.github.incplusplus.beacon.city.service;
 
-import com.google.common.collect.Streams;
 import io.github.incplusplus.beacon.city.generated.dto.ChannelDto;
 import io.github.incplusplus.beacon.city.mapper.ChannelMapper;
 import io.github.incplusplus.beacon.city.persistence.dao.ChannelRepository;
@@ -9,7 +8,6 @@ import io.github.incplusplus.beacon.city.persistence.model.Channel;
 import io.github.incplusplus.beacon.city.websocket.notifier.ChannelNotifier;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +48,10 @@ public class ChannelService {
     return newChannelDto;
   }
 
-  public List<ChannelDto> getChannels() {
-    return Streams.stream(channelRepository.findAll())
+  public List<ChannelDto> getChannels(String towerId) {
+    return channelRepository.findAllByTowerId(towerId).stream()
         .map(channelMapper::channelToChannelDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Transactional
