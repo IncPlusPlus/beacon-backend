@@ -1,7 +1,7 @@
 # Beacon Backend Services
 This repo contains the two backend services that power the Beacon project. The frontend can be found [here](https://github.com/IncPlusPlus/beacon-frontend). This project is for COMP4960 (Software Engineering) at Wentworth Institute of Technology.
 
-**NOTE:** These are **_developer_** instructions. If you're a user looking to self-host your own Towers, that documentation isn't available yet. Come back later.
+**NOTE:** These are **_developer_** instructions. If you're a user looking to host Towers on your own machine, please see the [City self-host guide](city/self-host-guide.md).
 
 ## Building
 This project can be built and run with our without an IDE. Note that building will fail if the files aren't up to the [Google Java coding style](https://google.github.io/styleguide/javaguide.html). If the `spotless` Gradle task is failing, run the `spotlessApply` task.
