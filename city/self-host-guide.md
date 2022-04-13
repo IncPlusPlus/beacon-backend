@@ -45,8 +45,9 @@ Running the City is as simple as running `./gradlew clean build :city:bootRun`
 This command will run in the foreground until you terminate the process with CTRL + C or by sending the SIGTERM or SIGKILL system commands. If you'd like this process to run in the background, you can use a tool like [screen](https://www.gnu.org/software/screen/manual/screen.html) ([here's](https://www.baeldung.com/linux/screen-command) a helpful getting started guide).
 
 ### Creating the first tower
-At the moment, there isn't a way to create a new tower on a designated City via the web app. You'll have to visit the City's URL and send a `POST` request to the `/towers` endpoint. See [the Swagger docs](https://beacon-city.herokuapp.com/swagger-ui/index.html#/Towers/createTower) for how that works.
+At the moment, there isn't a way to create a new tower on a designated City via the web app (tracked by [frontend#21](https://github.com/IncPlusPlus/beacon-frontend/issues/21)). You'll have to use a tool like [Postman](https://www.postman.com/) to send a `POST` request to the `/towers` endpoint until this feature is implemented in the frontend.
 
+See [the Swagger docs](https://beacon-city.herokuapp.com/swagger-ui/index.html#/Towers/createTower) for the parameters that endpoint accepts.
 
 ## Updating
 To update the City, you'll need to stop the service. There currently is no way to gracefully shut the City down (see [#42](https://github.com/IncPlusPlus/beacon-backend/issues/42) for progress on this), so you'll need to stop the process yourself.
