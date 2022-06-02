@@ -1,4 +1,4 @@
-package io.github.incplusplus.beacon.centralidentityserver.exception;
+package io.github.incplusplus.beacon.common.exception;
 
 public class StorageException extends RuntimeException {
 
