@@ -26,6 +26,8 @@ public class MessageService {
   private final LoginAuthenticationProvider loginAuthenticationProvider;
   private final MessageNotifier messageNotifier;
 
+  private final StorageService storageService;
+
   @Autowired
   public MessageService(
       TowerRepository towerRepository,
@@ -33,13 +35,15 @@ public class MessageService {
       MessageRepository messageRepository,
       MessageMapper messageMapper,
       LoginAuthenticationProvider loginAuthenticationProvider,
-      MessageNotifier messageNotifier) {
+      MessageNotifier messageNotifier,
+      StorageService storageService) {
     this.towerRepository = towerRepository;
     this.channelRepository = channelRepository;
     this.messageRepository = messageRepository;
     this.messageMapper = messageMapper;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
     this.messageNotifier = messageNotifier;
+    this.storageService = storageService;
   }
 
   public MessageDto createMessage(
@@ -56,15 +60,22 @@ public class MessageService {
       // TODO: Make a proper exception
       throw new RuntimeException("Channel not found");
     }
+    // Grab the sender's ID
+    String senderId = loginAuthenticationProvider.getIdForUsername(senderUsername);
     // TODO: Probably should verify that the channel is actually one of the channels within the
     //  specified tower
     Message newMessage = messageMapper.messageDtoToMessage(messageDto);
     newMessage.setSentTime(Instant.now());
     newMessage.setTowerId(towerId);
     newMessage.setChannelId(channelId);
-    newMessage.setSenderId(loginAuthenticationProvider.getIdForUsername(senderUsername));
-    // TODO: Deal with saving attachments and generating the URLs for them.
-    //  These URLs will then populate the array of attachment URLs in the entity.
+    newMessage.setSenderId(senderId);
+    // Upload the attachments and grab their URLs
+    List<String> attachmentUrls =
+        attachments.stream()
+            .map(multipartFile -> storageService.save(multipartFile, towerId, channelId, senderId))
+            .toList();
+    // Add the attachment URLs to the message object before persisting it.
+    newMessage.setAttachments(attachmentUrls);
     newMessage = messageRepository.save(newMessage);
     MessageDto newMessageDto = messageMapper.messageToMessageDto(newMessage);
     // Kick off any tasks needed here for the websocket notification about a new message

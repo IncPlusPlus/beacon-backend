@@ -62,6 +62,8 @@ dependencies {
     implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
     // Because Guava has some great utility methods
     implementation 'com.google.guava:guava:31.1-jre'
+    // For TSID generation
+    implementation 'com.github.f4b6a3:tsid-creator:4.2.1'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
