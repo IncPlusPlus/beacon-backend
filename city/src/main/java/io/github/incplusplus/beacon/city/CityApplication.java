@@ -1,12 +1,11 @@
 package io.github.incplusplus.beacon.city;
 
-import io.github.incplusplus.beacon.city.properties.LocalStorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties({LocalStorageProperties.class})
+@ConfigurationPropertiesScan("io.github.incplusplus.beacon.city.properties")
 public class CityApplication {
   public static void main(String[] args) {
     SpringApplication.run(CityApplication.class, args);

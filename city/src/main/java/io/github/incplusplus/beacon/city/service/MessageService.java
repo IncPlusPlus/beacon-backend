@@ -8,6 +8,8 @@ import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Message;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.websocket.notifier.MessageNotifier;
+import io.github.incplusplus.beacon.common.exception.StorageException;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +74,14 @@ public class MessageService {
     // Upload the attachments and grab their URLs
     List<String> attachmentUrls =
         attachments.stream()
-            .map(multipartFile -> storageService.save(multipartFile, towerId, channelId, senderId))
+            .map(
+                multipartFile -> {
+                  try {
+                    return storageService.save(multipartFile, towerId, channelId, senderId);
+                  } catch (IOException e) {
+                    throw new StorageException(e);
+                  }
+                })
             .toList();
     // Add the attachment URLs to the message object before persisting it.
     newMessage.setAttachments(attachmentUrls);
