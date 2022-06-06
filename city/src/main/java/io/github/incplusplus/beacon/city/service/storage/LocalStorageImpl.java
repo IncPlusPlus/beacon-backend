@@ -60,7 +60,7 @@ public class LocalStorageImpl implements StorageService {
       throw new StorageException("Failed to store file.", e);
     }
     // Switch this to http if you're testing locally
-    return "http://"
+    return "https://"
         + autoRegisterCity.getHostName()
         // Add this part if you're testing locally
         + ":8080"
