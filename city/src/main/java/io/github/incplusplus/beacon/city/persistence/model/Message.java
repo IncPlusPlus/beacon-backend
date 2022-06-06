@@ -22,4 +22,6 @@ public class Message {
   private Instant sentTime;
   private String messageBody;
   private List<String> attachments;
+  /** This is true if the message was edited (changed after it was sent) */
+  private boolean edited;
 }
