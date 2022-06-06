@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // @formatter:off
     http.csrf().disable()
         .authorizeRequests()
-          .antMatchers("/account/create-new-account").permitAll()
+          .antMatchers(HttpMethod.POST,"/account").permitAll()
           .antMatchers("/city-cis-intercom/register-city").permitAll()
           .antMatchers("/invalidSession*").anonymous()
           .antMatchers("/city-cis-intercom/**").hasRole("CITY")

@@ -53,15 +53,24 @@ public class UserService {
   }
 
   /**
-   * @param userAccountId the ID of the account to find
+   * @param userAccountId the ID of the account to find. If blank, this will request info about the
+   *     account that sent this request (retrieved from the second parameter)
    * @param usernameOfAccountRequestingInfo the ID of the account requesting this information
    * @return the account information requested. For privacy reasons, the email address will be
    *     redacted if the requested account is not the same as the account sending the request.
    */
   public Optional<UserAccountDto> publicGetAccountById(
       String userAccountId, String usernameOfAccountRequestingInfo) {
-    return userRepository
-        .findById(userAccountId)
+    Optional<User> accountInQuestion;
+    // If no user account ID was provided
+    if (userAccountId == null || userAccountId.isBlank()) {
+      // Then the request is actually asking for info about the user who sent the request
+      accountInQuestion = userRepository.findByUsername(usernameOfAccountRequestingInfo);
+    } else {
+      // Otherwise, find the account denoted by the ID that was provided in the request
+      accountInQuestion = userRepository.findById(userAccountId);
+    }
+    return accountInQuestion
         // Map user Document to a DTO in preparation for returning to the controller
         .map(userMapper::userToUserDto)
         // Redact the email address if the user who is requesting this info isn't the user who is
