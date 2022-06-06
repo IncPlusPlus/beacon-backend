@@ -25,7 +25,7 @@ servers:
     description: Production
 
 paths:
-  '/account/create-new-account':
+  '/account':
     post:
       tags: [ Account Management ]
       summary: Create a new user account
@@ -45,6 +45,30 @@ paths:
                 $ref: '#/components/schemas/UserAccount'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    get:
+      tags: [ Account Management ]
+      summary: Get information about the user with the specified ID
+      parameters:
+        - name: user-account-id
+          in: query
+          description: The ID of a user. If empty or not specified, will default to the user sending this request.
+          required: false
+          schema:
+            type: string
+      operationId: getAccount
+      responses:
+        '200':
+          description: Ok. Operation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
   '/account/update-profile-picture':
@@ -70,31 +94,6 @@ paths:
                 $ref: '#/components/schemas/UserAccount'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/ServerError'
-  '/account':
-    parameters:
-      - name: user-account-id
-        in: query
-        description: The ID of a user. If empty or not specified, will default to the user sending this request.
-        required: false
-        schema:
-          type: string
-    get:
-      tags: [ Account Management ]
-      summary: Get information about the user with the specified ID
-      operationId: getAccount
-      responses:
-        '200':
-          description: Ok. Operation successful.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserAccount'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
   '/account/{user-account-id}/profile-picture':
