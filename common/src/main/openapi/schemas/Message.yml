@@ -29,3 +29,6 @@ properties:
     items:
       type: string
     example: ["https://beacon-city.herokuapp.com/towers/towerId/uploads/messageId/imageName.png", "https://beacon-city.herokuapp.com/towers/towerId/uploads/messageId/image2.jpg"]
+  edited:
+    description: This is true if the message was edited (changed after it was sent)
+    type: boolean
