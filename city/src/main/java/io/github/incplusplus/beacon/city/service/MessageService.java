@@ -121,6 +121,7 @@ public class MessageService {
     Message message = messageOptional.get();
     // Users may only edit the message body. We don't let them sneakily modify any other fields
     message.setMessageBody(messageDto.getMessageBody());
+    message.setEdited(true);
     // Save the edited message and convert the resulting object into a DTO
     MessageDto editedDto = messageMapper.messageToMessageDto(messageRepository.save(message));
     // Notify all subscribed clients that this message has been edited
