@@ -51,8 +51,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
     if (file.getContentType() != null && !"".equals(file.getContentType())) {
       metadata.setContentType(file.getContentType());
     }
-    String fileKey =
-        towerId + "/" + channelId + "/" + tsid + "/" + file.getOriginalFilename();
+    String fileKey = towerId + "/" + channelId + "/" + tsid + "/" + file.getOriginalFilename();
     s3Client.putObject(
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));
