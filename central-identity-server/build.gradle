@@ -52,7 +52,7 @@ dependencies {
     // Required for OpenApi generator
     implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
     // For showing Swagger UI
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.8'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
     // For conversion between DTOs and Documents/Entities
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
     // For nicer error messages in the API

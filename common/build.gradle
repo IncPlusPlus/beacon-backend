@@ -23,7 +23,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // For showing Swagger UI
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.8'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
     // For nicer error messages in the API
     implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
 
