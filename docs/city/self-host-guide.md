@@ -23,7 +23,7 @@ Configure some kind of web server to serve the content from the City. Currently,
 You'll most likely want to use a subdomain to make your City not occupy your entire domain. If you do this, be sure your SSL certificate covers that subdomain or supports wildcard subdomains.
 
 ### Hosts Configuration
-To [the City's main config file](src/main/resources/application.yml), you will need to add the following:
+To [the City's main config file](Downloads/beacon-backend/city/src/main/resources/application.yml), you will need to add the following:
 ```yaml
 city:
   cis-url: https://beacon-cis.herokuapp.com
@@ -34,7 +34,10 @@ The `cis-url` should not be changed. It tells the City where the CIS is that it 
 ### Database Configuration
 If your MongoDB database is reachable at `localhost:27017`, you can skip this section.
 
-If not, you'll need to add a `spring.data.mongodb.uri` line to [application.yml](src/main/resources/application.yml) similar to the one seen in [the production config](src/main/resources/application-heroku-prod.yml), substituting the URL, username, and password for those of your own database. Note that your URI should start with `mongodb://` and in most cases won't include the "+srv" part. 
+If not, you'll need to add a `spring.data.mongodb.uri` line to [application.yml](Downloads/beacon-backend/city/src/main/resources/application.yml) similar to the one seen in [the production config](Downloads/beacon-backend/city/src/main/resources/application-heroku-prod.yml), substituting the URL, username, and password for those of your own database. Note that your URI should start with `mongodb://` and in most cases won't include the "+srv" part.
+
+### Storage Configuration
+When users upload files with the messages they send, they need to be stored somewhere. By default, a directory named "upload-dir" will be created alongside wherever the City was started from. To change this or to pick a different storage provider, please see the [storage providers documentation](storage-providers.md)
 
 ### Port Configuration
 By default, this application runs on port 8080. To override this, set an environment variable named `PORT` to the desired port before starting the service.
