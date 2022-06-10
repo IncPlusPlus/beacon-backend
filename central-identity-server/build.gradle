@@ -54,7 +54,7 @@ dependencies {
     // For showing Swagger UI
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.8'
     // For conversion between DTOs and Documents/Entities
-    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    implementation 'org.mapstruct:mapstruct:1.5.1.Final'
     // For nicer error messages in the API
     implementation 'org.zalando:problem-spring-web-starter:0.28.0-RC.0'
     // Because Guava has some great utility methods
@@ -62,13 +62,13 @@ dependencies {
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.1.Final'
     // https://docs.spring.io/spring-boot/docs/current/reference/html/configuration-metadata.html#configuration-metadata.annotation-processor.configuring
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
-    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 }
 
 tasks.named('test') {
