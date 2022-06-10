@@ -1,8 +1,8 @@
 package io.github.incplusplus.beacon.centralidentityserver.service;
 
-import io.github.incplusplus.beacon.centralidentityserver.exception.StorageException;
 import io.github.incplusplus.beacon.centralidentityserver.exception.StorageFileNotFoundException;
 import io.github.incplusplus.beacon.centralidentityserver.properties.StorageProperties;
+import io.github.incplusplus.beacon.common.exception.StorageException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

@@ -49,7 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/v3/api-docs.yml")
         // For access to websocket endpoints (see
         // io.github.incplusplus.beacon.city.websocket.config.WebSocketConfig#registerStompEndpoints)
-        .antMatchers("/beacon-ws/**");
+        .antMatchers("/beacon-ws/**")
+        // For access to attachments
+        .antMatchers("/attachments/**");
   }
 
   @Override

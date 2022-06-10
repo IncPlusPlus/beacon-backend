@@ -5,3 +5,10 @@ spring:
 city:
   cis-url: https://beacon-cis-main-staging.herokuapp.com
   hostname: beacon-city.herokuapp.com
+do:
+  spaces:
+    key: ${DO_SPACES_KEY}
+    secret: ${DO_SPACES_SECRET}
+    endpoint: nyc3.digitaloceanspaces.com
+    region: nyc3
+    bucket: beaconcdn
