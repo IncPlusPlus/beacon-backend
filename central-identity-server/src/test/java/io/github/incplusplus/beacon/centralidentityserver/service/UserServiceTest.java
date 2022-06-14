@@ -28,7 +28,7 @@ class UserServiceTest extends AbstractServiceTest {
 
   @BeforeEach
   void setupTest() {
-    userService = new UserService(userRepository, encoder, userMapper);
+    userService = new UserService(userRepository, encoder, userMapper, "key", "secret");
   }
 
   @AfterEach
@@ -41,13 +41,18 @@ class UserServiceTest extends AbstractServiceTest {
           "620550e214e31b50d95f26ff",
           "sampletext@comcast.net",
           "testAccount1",
-          "superSecretPassword1");
+          "superSecretPassword1",
+          "");
   public User user2 =
       new User(
-          "j5lkjklkljlkjkljlkj4lk43", "bruh@google.com", "testAccount2", "superSecretPassword2");
+          "j5lkjklkljlkjkljlkj4lk43",
+          "bruh@google.com",
+          "testAccount2",
+          "superSecretPassword2",
+          "");
   public User user3 =
       new User(
-          "n4b3k5n5i35k63mfiv8vy3b9", "null@void.help", "testAccount3", "superSecretPassword3");
+          "n4b3k5n5i35k63mfiv8vy3b9", "null@void.help", "testAccount3", "superSecretPassword3", "");
 
   @Test
   void registerNewUserAccount() {
@@ -63,7 +68,8 @@ class UserServiceTest extends AbstractServiceTest {
             newAccountDto.getId(),
             user1.getEmailAddress(),
             user1.getUsername(),
-            encoder.encode(user1.getPassword()));
+            encoder.encode(user1.getPassword()),
+            "");
     assertThat(userService.getAccountById(newAccount.getId()))
         .get()
         .usingRecursiveComparison()
