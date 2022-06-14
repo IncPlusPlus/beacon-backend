@@ -96,27 +96,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/account/{user-account-id}/profile-picture':
-    parameters:
-      - $ref: '#/components/parameters/user-account-id'
-    get:
-      tags: [ Account Management ]
-      summary: Get the profile picture file of this specific user
-      operationId: getProfilePicture
-      responses:
-        '200':
-          description: Ok. Operation successful.
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
   '/cities':
     get:
       tags: [ City Management ]
