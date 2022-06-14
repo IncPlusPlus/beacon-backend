@@ -11,7 +11,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 /**
  * A base class for WebMvcConfigurer logic that's shared among both the City and CIS projects. This
  * helps reduce code duplication between the two projects. Extend this class with a new class to use
- * it. Be sure to annotate your subclass with the {@link Configuration} annotation.
+ * it. Be sure to annotate your subclass with the {@link Configuration} annotation
  */
 public class MvcConfigurationBase implements WebMvcConfigurer {
 
