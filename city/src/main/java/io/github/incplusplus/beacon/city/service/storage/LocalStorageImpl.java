@@ -32,7 +32,8 @@ public class LocalStorageImpl implements StorageService {
   }
 
   @Override
-  public String save(MultipartFile file, String towerId, String channelId, String senderId) {
+  public String saveUserAttachment(
+      MultipartFile file, String towerId, String channelId, String senderId) {
     // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
     long tsid = TsidCreator.getTsid256().toLong();
     Path attachmentPath =

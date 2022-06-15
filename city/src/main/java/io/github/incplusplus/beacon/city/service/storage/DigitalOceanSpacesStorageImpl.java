@@ -41,8 +41,8 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   }
 
   @Override
-  public String save(MultipartFile file, String towerId, String channelId, String senderId)
-      throws IOException {
+  public String saveUserAttachment(
+      MultipartFile file, String towerId, String channelId, String senderId) throws IOException {
     // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
     long tsid = TsidCreator.getTsid256().toLong();
 

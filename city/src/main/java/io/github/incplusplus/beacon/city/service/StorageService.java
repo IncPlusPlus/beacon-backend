@@ -15,6 +15,6 @@ public interface StorageService {
    * @return a URL that points to the newly-uploaded file
    * @throws IOException if the file couldn't be uploaded
    */
-  String save(MultipartFile file, String towerId, String channelId, String senderId)
+  String saveUserAttachment(MultipartFile file, String towerId, String channelId, String senderId)
       throws IOException;
 }
