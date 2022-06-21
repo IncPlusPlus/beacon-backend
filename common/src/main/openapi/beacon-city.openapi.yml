@@ -136,12 +136,22 @@ paths:
       tags: [ Towers ]
       summary: Update a tower
       operationId: editTower
-      description: Note that this does not let you update the icon or banner image for the tower. There are separate endpoints for that.
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Tower'
+              type: object
+              properties:
+                tower:
+                  $ref: '#/components/schemas/Tower'
+                icon:
+                  type: string
+                  format: binary
+                  description: Upload a PNG here to set the Tower's icon. You can choose to upload a zero byte file to remove the icon entirely. Specifying nothing for this part of the request will leave the icon as-is.
+                banner:
+                  type: string
+                  format: binary
+                  description: Upload a PNG here to set the Tower's banner. You can choose to upload a zero byte file to remove the banner entirely. Specifying nothing for this part of the request will leave the banner as-is.
       responses:
         '200':
           description: Modified.

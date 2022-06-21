@@ -9,6 +9,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class TowerController implements TowersApi {
@@ -47,8 +48,9 @@ public class TowerController implements TowersApi {
   }
 
   @Override
-  public ResponseEntity<TowerDto> editTower(String towerId, TowerDto towerDto) {
-    return ResponseEntity.of(towerService.editTower(towerId, towerDto));
+  public ResponseEntity<TowerDto> editTower(
+      String towerId, TowerDto towerDto, MultipartFile icon, MultipartFile banner) {
+    return ResponseEntity.of(towerService.editTower(towerId, towerDto, icon, banner));
   }
 
   @Override

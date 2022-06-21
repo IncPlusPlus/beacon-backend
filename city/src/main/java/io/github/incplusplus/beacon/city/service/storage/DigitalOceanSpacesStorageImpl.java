@@ -59,6 +59,31 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
     return getFileEdgeUrl(fileKey);
   }
 
+  @Override
+  public String saveTowerIcon(MultipartFile icon, String towerId) throws IOException {
+    return saveTowerOrBanner(icon, towerId, true);
+  }
+
+  @Override
+  public String saveTowerBanner(MultipartFile banner, String towerId) throws IOException {
+    return saveTowerOrBanner(banner, towerId, false);
+  }
+
+  private String saveTowerOrBanner(MultipartFile file, String towerId, boolean isIcon)
+      throws IOException {
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(file.getInputStream().available());
+    if (file.getContentType() != null && !"".equals(file.getContentType())) {
+      metadata.setContentType(file.getContentType());
+    }
+    String fileKey = towerId + "/" + (isIcon ? "icon.png" : "banner.png");
+    s3Client.putObject(
+        new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
+            .withCannedAcl(CannedAccessControlList.PublicRead));
+
+    return getFileEdgeUrl(fileKey);
+  }
+
   private String getFileOriginUrl(String fileKey) {
     // https://beaconcdn.nyc3.digitaloceanspaces.com/623de7d41b2b8c392b5e23d0/624ca52e535e2e1cbf9f390a/321681041876494489/beacon-central-identity-server-bundled.openapi.yml
     return "https://" + props.getBucket() + "." + props.getEndpoint() + "/" + fileKey;

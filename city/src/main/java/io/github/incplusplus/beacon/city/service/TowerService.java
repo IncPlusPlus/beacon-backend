@@ -7,6 +7,9 @@ import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Tower;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
+import io.github.incplusplus.beacon.common.exception.StorageException;
+import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -243,8 +247,8 @@ public class TowerService {
     return this.cisWebClient;
   }
 
-  public Optional<TowerDto> editTower(String towerId, TowerDto towerDto) {
-    // TODO: Implement
+  public Optional<TowerDto> editTower(
+      String towerId, TowerDto towerDto, MultipartFile icon, MultipartFile banner) {
     if (!towerRepository.existsById(towerId)) {
       // TODO: Make a proper exception
       throw new RuntimeException("Tower not found");
@@ -254,6 +258,14 @@ public class TowerService {
       return Optional.empty();
     }
     Tower tower = towerOptional.get();
+
+    try {
+      // Update icon and banner depending on what the user uploaded
+      tower = updateIcon(tower, icon);
+      tower = updateBanner(tower, banner);
+    } catch (IOException e) {
+      throw new StorageException("Unable to update banner or icon", e);
+    }
 
     // Update the Tower name
     tower.setName(towerDto.getName());
@@ -280,5 +292,33 @@ public class TowerService {
     // TODO: Notify all subscribed clients that this Tower has been edited
 
     return Optional.of(editedDto);
+  }
+
+  private Tower updateIcon(Tower tower, MultipartFile icon) throws IOException {
+    if (icon != null) {
+      if (icon.getSize() == 0) {
+        tower.setIconUrl("");
+      } else {
+        if (icon.getContentType() == null || !icon.getContentType().equals("image/png")) {
+          throw new UnsupportedFileTypeException(icon.getContentType(), "image/png");
+        }
+        tower.setIconUrl(storageService.saveTowerIcon(icon, tower.getId()));
+      }
+    }
+    return tower;
+  }
+
+  private Tower updateBanner(Tower tower, MultipartFile banner) throws IOException {
+    if (banner != null) {
+      if (banner.getSize() == 0) {
+        tower.setBannerUrl("");
+      } else {
+        if (banner.getContentType() == null || !banner.getContentType().equals("image/png")) {
+          throw new UnsupportedFileTypeException(banner.getContentType(), "image/png");
+        }
+        tower.setBannerUrl(storageService.saveTowerBanner(banner, tower.getId()));
+      }
+    }
+    return tower;
   }
 }

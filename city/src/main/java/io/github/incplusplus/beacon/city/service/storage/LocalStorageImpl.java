@@ -64,7 +64,52 @@ public class LocalStorageImpl implements StorageService {
     return "https://"
         + autoRegisterCity.getHostName()
         // Add this part if you're testing locally
-//        + ":8080"
+        //        + ":8080"
+        // I know this sucks. Shut up.
+        + "/attachments/"
+        + attachmentPath.toString().replace("\\", "/");
+  }
+
+  @Override
+  public String saveTowerIcon(MultipartFile icon, String towerId) {
+    return saveTowerIconOrBanner(icon, towerId, true);
+  }
+
+  @Override
+  public String saveTowerBanner(MultipartFile banner, String towerId) {
+    return saveTowerIconOrBanner(banner, towerId, false);
+  }
+
+  private String saveTowerIconOrBanner(MultipartFile file, String towerId, boolean isIcon) {
+    String fileName = isIcon ? "icon.png" : "banner.png";
+    Path attachmentPath = Paths.get(towerId, fileName);
+    try {
+      if (file.isEmpty()) {
+        throw new StorageException("Failed to store empty file.");
+      }
+      Path destinationFile =
+          // TODO: It might be wise to do some really basic name checking to find malicious chars
+          // like ".", "..", etc.
+          this.rootLocation.resolve(attachmentPath).normalize().toAbsolutePath();
+      if (!destinationFile.startsWith(this.rootLocation.toAbsolutePath())) {
+        // This is a security check
+        throw new StorageException("Cannot store file outside current directory.");
+      }
+      try (InputStream inputStream = file.getInputStream()) {
+        // Create necessary directories (or copy op will fail with NoSuchFileException)
+        // https://stackoverflow.com/a/2833883/1687436
+        //noinspection ResultOfMethodCallIgnored
+        destinationFile.toFile().getParentFile().mkdirs();
+        Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+      }
+    } catch (IOException e) {
+      throw new StorageException("Failed to store file.", e);
+    }
+    // Switch this to http if you're testing locally
+    return "https://"
+        + autoRegisterCity.getHostName()
+        // Add this part if you're testing locally
+        //        + ":8080"
         // I know this sucks. Shut up.
         + "/attachments/"
         + attachmentPath.toString().replace("\\", "/");
