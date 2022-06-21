@@ -132,6 +132,27 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+    put:
+      tags: [ Towers ]
+      summary: Update a tower
+      operationId: editTower
+      description: Note that this does not let you update the icon or banner image for the tower. There are separate endpoints for that.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tower'
+      responses:
+        '200':
+          description: Modified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tower'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
     delete:
       tags: [ Towers ]
       summary: Delete a tower

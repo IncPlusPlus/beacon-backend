@@ -47,6 +47,11 @@ public class TowerController implements TowersApi {
   }
 
   @Override
+  public ResponseEntity<TowerDto> editTower(String towerId, TowerDto towerDto) {
+    return ResponseEntity.of(towerService.editTower(towerId, towerDto));
+  }
+
+  @Override
   public ResponseEntity<TowerDto> joinTower(String towerId) {
     return ResponseEntity.ok(
         towerService.joinTower(authenticationFacade.getAuthentication().getName(), towerId));

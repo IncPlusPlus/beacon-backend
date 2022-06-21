@@ -26,17 +26,20 @@ public class TowerService {
   private final AutoRegisterCity autoRegisterCity;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
   private WebClient cisWebClient;
+  private final StorageService storageService;
 
   @Autowired
   public TowerService(
       TowerMapper towerMapper,
       TowerRepository towerRepository,
       AutoRegisterCity autoRegisterCity,
-      LoginAuthenticationProvider loginAuthenticationProvider) {
+      LoginAuthenticationProvider loginAuthenticationProvider,
+      StorageService storageService) {
     this.towerMapper = towerMapper;
     this.towerRepository = towerRepository;
     this.autoRegisterCity = autoRegisterCity;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
+    this.storageService = storageService;
   }
 
   public TowerDto createTower(String username, TowerDto towerDto) {
@@ -47,6 +50,9 @@ public class TowerService {
     towerDto.setMemberAccountIds(new ArrayList<>());
     // Initialize moderator ID list
     towerDto.setModeratorAccountIds(new ArrayList<>());
+    // Set default primary and secondary colors
+    towerDto.setPrimaryColor("FFD800");
+    towerDto.setSecondaryColor("5e5d59");
     // Save this new Tower to the database
     Tower tower = towerRepository.save(towerMapper.towerDtoToTower(towerDto));
     // Make the creator of the tower join the tower and return the changed tower
@@ -235,5 +241,44 @@ public class TowerService {
               .build();
     }
     return this.cisWebClient;
+  }
+
+  public Optional<TowerDto> editTower(String towerId, TowerDto towerDto) {
+    // TODO: Implement
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    Optional<Tower> towerOptional = towerRepository.findById(towerId);
+    if (towerOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    Tower tower = towerOptional.get();
+
+    // Update the Tower name
+    tower.setName(towerDto.getName());
+    // Update the Tower admin account id
+    tower.setAdminAccountId(towerDto.getAdminAccountId());
+    // If it was specified in the request, set the moderators list
+    if (towerDto.getModeratorAccountIds() != null) {
+      tower.setModeratorAccountIds(towerDto.getModeratorAccountIds());
+    }
+    // We don't do anything here with the members list because the members list is only modified
+    // when a user joins or leaves. We shouldn't be editing it manually.
+
+    // Potentially check if the icon or banner URL was specified. Normally it shouldn't be but if
+    // the word "delete" is specified, maybe we should remove those URLs. That'd provide a way to
+    // remove either of those pictures if we wanted to (like if we wanted to do it for a demo and
+    // then reset them).
+
+    // Update the colors. We don't bother checking if they're valid hex values.
+    tower.setPrimaryColor(towerDto.getPrimaryColor());
+    tower.setSecondaryColor(towerDto.getSecondaryColor());
+    // Update the Tower in the database
+    TowerDto editedDto =
+        towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
+    // TODO: Notify all subscribed clients that this Tower has been edited
+
+    return Optional.of(editedDto);
   }
 }
