@@ -64,7 +64,7 @@ public class LocalStorageImpl implements StorageService {
     return "https://"
         + autoRegisterCity.getHostName()
         // Add this part if you're testing locally
-        + ":8080"
+//        + ":8080"
         // I know this sucks. Shut up.
         + "/attachments/"
         + attachmentPath.toString().replace("\\", "/");
