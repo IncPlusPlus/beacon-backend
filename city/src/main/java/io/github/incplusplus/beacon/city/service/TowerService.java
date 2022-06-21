@@ -7,6 +7,7 @@ import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Tower;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
+import io.github.incplusplus.beacon.city.websocket.notifier.TowerNotifier;
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
 import java.io.IOException;
@@ -30,6 +31,7 @@ public class TowerService {
   private final AutoRegisterCity autoRegisterCity;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
   private WebClient cisWebClient;
+  private final TowerNotifier towerNotifier;
   private final StorageService storageService;
 
   @Autowired
@@ -38,11 +40,13 @@ public class TowerService {
       TowerRepository towerRepository,
       AutoRegisterCity autoRegisterCity,
       LoginAuthenticationProvider loginAuthenticationProvider,
+      TowerNotifier towerNotifier,
       StorageService storageService) {
     this.towerMapper = towerMapper;
     this.towerRepository = towerRepository;
     this.autoRegisterCity = autoRegisterCity;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
+    this.towerNotifier = towerNotifier;
     this.storageService = storageService;
   }
 
@@ -278,18 +282,14 @@ public class TowerService {
     // We don't do anything here with the members list because the members list is only modified
     // when a user joins or leaves. We shouldn't be editing it manually.
 
-    // Potentially check if the icon or banner URL was specified. Normally it shouldn't be but if
-    // the word "delete" is specified, maybe we should remove those URLs. That'd provide a way to
-    // remove either of those pictures if we wanted to (like if we wanted to do it for a demo and
-    // then reset them).
-
     // Update the colors. We don't bother checking if they're valid hex values.
     tower.setPrimaryColor(towerDto.getPrimaryColor());
     tower.setSecondaryColor(towerDto.getSecondaryColor());
     // Update the Tower in the database
     TowerDto editedDto =
         towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
-    // TODO: Notify all subscribed clients that this Tower has been edited
+    // Notify all subscribed clients that this Tower has been edited
+    towerNotifier.notifyEditedTower(editedDto);
 
     return Optional.of(editedDto);
   }
