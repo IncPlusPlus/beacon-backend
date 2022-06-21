@@ -1,6 +1,7 @@
 package io.github.incplusplus.beacon.city.config;
 
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
+import io.github.incplusplus.beacon.city.service.CisCommunicationsService;
 import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final SecurityProblemSupport problemSupport;
   private final AutoRegisterCity autoRegisterCity;
+  private final CisCommunicationsService cisCommunicationsService;
 
   @Autowired
-  public SecurityConfig(SecurityProblemSupport problemSupport, AutoRegisterCity autoRegisterCity) {
+  public SecurityConfig(
+      SecurityProblemSupport problemSupport,
+      AutoRegisterCity autoRegisterCity,
+      CisCommunicationsService cisCommunicationsService) {
     super();
     this.problemSupport = problemSupport;
+    this.cisCommunicationsService = cisCommunicationsService;
     this.autoRegisterCity = autoRegisterCity;
   }
 
@@ -74,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public LoginAuthenticationProvider authProvider() {
-    return new LoginAuthenticationProvider(autoRegisterCity);
+    return new LoginAuthenticationProvider(autoRegisterCity, cisCommunicationsService);
   }
 
   @Bean

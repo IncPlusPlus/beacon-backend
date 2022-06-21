@@ -1,5 +1,7 @@
 package io.github.incplusplus.beacon.city.spring;
 
+import static io.github.incplusplus.beacon.city.service.CisCommunicationsService.CIS_REGISTER_CITY_ENDPOINT;
+
 import io.github.incplusplus.beacon.city.generated.dto.NewCityDto;
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +69,22 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
     //  exists.
   }
 
+  public String getCISUrl() {
+    return CIS_URL;
+  }
+
+  public String getCityId() {
+    return cityId;
+  }
+
+  public String getCityCISPassword() {
+    return cityCISPassword;
+  }
+
+  public String getHostName() {
+    return hostName;
+  }
+
   private void loadProperties() {
     Properties props = new Properties();
     try (FileInputStream in = new FileInputStream(identityFile)) {
@@ -93,7 +111,7 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/city-cis-intercom/register-city")
+                        .path(CIS_REGISTER_CITY_ENDPOINT)
                         .queryParam("city-host-name", getHostName())
                         .build())
             .retrieve()
@@ -107,21 +125,5 @@ public class AutoRegisterCity implements ApplicationListener<ContextRefreshedEve
     } catch (IOException e) {
       log.error("Failed to save the City's new identity.", e);
     }
-  }
-
-  public String getCISUrl() {
-    return CIS_URL;
-  }
-
-  public String getCityId() {
-    return cityId;
-  }
-
-  public String getCityCISPassword() {
-    return cityCISPassword;
-  }
-
-  public String getHostName() {
-    return hostName;
   }
 }
