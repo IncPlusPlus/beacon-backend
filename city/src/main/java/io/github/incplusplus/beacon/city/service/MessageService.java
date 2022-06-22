@@ -27,7 +27,6 @@ public class MessageService {
   private final MessageMapper messageMapper;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
   private final MessageNotifier messageNotifier;
-
   private final StorageService storageService;
 
   @Autowired
@@ -77,7 +76,8 @@ public class MessageService {
             .map(
                 multipartFile -> {
                   try {
-                    return storageService.save(multipartFile, towerId, channelId, senderId);
+                    return storageService.saveUserAttachment(
+                        multipartFile, towerId, channelId, senderId);
                   } catch (IOException e) {
                     throw new StorageException(e);
                   }

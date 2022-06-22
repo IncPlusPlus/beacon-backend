@@ -1,11 +1,11 @@
 package io.github.incplusplus.beacon.centralidentityserver.controller;
 
-import io.github.incplusplus.beacon.centralidentityserver.exception.UnsupportedFileTypeException;
 import io.github.incplusplus.beacon.centralidentityserver.generated.controller.AccountManagementApi;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateAccountRequestDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAccountDto;
 import io.github.incplusplus.beacon.centralidentityserver.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
+import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

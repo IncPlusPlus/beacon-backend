@@ -1,4 +1,4 @@
-package io.github.incplusplus.beacon.centralidentityserver.exception;
+package io.github.incplusplus.beacon.common.exception;
 
 import java.net.URI;
 import org.zalando.problem.AbstractThrowableProblem;

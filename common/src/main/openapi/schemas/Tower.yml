@@ -27,3 +27,19 @@ properties:
     type: array
     items:
       type: string
+  icon_url:
+    description: The URL that points to the icon for this tower. If this is undefined, null, or empty, use a placeholder icon.
+    type: string
+    example: https://something.anotherthing.com/icon.png
+  banner_url:
+    description: The URL that points to the banner image for this tower. If this is undefined, null, or empty, use a placeholder icon.
+    type: string
+    example: https://something.anotherthing.com/banner.png
+  primary_color:
+    description: The primary color for this tower. The frontend may use this value as it pleases.
+    type: string
+    example: FFD800
+  secondary_color:
+    description: The secondary color for this tower. The frontend may use this value as it pleases.
+    type: string
+    example: 5e5d59

@@ -41,8 +41,8 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   }
 
   @Override
-  public String save(MultipartFile file, String towerId, String channelId, String senderId)
-      throws IOException {
+  public String saveUserAttachment(
+      MultipartFile file, String towerId, String channelId, String senderId) throws IOException {
     // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
     long tsid = TsidCreator.getTsid256().toLong();
 
@@ -52,6 +52,31 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
       metadata.setContentType(file.getContentType());
     }
     String fileKey = towerId + "/" + channelId + "/" + tsid + "/" + file.getOriginalFilename();
+    s3Client.putObject(
+        new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
+            .withCannedAcl(CannedAccessControlList.PublicRead));
+
+    return getFileEdgeUrl(fileKey);
+  }
+
+  @Override
+  public String saveTowerIcon(MultipartFile icon, String towerId) throws IOException {
+    return saveTowerOrBanner(icon, towerId, true);
+  }
+
+  @Override
+  public String saveTowerBanner(MultipartFile banner, String towerId) throws IOException {
+    return saveTowerOrBanner(banner, towerId, false);
+  }
+
+  private String saveTowerOrBanner(MultipartFile file, String towerId, boolean isIcon)
+      throws IOException {
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(file.getInputStream().available());
+    if (file.getContentType() != null && !"".equals(file.getContentType())) {
+      metadata.setContentType(file.getContentType());
+    }
+    String fileKey = towerId + "/" + (isIcon ? "icon.png" : "banner.png");
     s3Client.putObject(
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));

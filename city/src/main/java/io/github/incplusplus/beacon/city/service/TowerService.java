@@ -7,6 +7,10 @@ import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Tower;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
+import io.github.incplusplus.beacon.city.websocket.notifier.TowerNotifier;
+import io.github.incplusplus.beacon.common.exception.StorageException;
+import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
@@ -26,17 +31,23 @@ public class TowerService {
   private final AutoRegisterCity autoRegisterCity;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
   private WebClient cisWebClient;
+  private final TowerNotifier towerNotifier;
+  private final StorageService storageService;
 
   @Autowired
   public TowerService(
       TowerMapper towerMapper,
       TowerRepository towerRepository,
       AutoRegisterCity autoRegisterCity,
-      LoginAuthenticationProvider loginAuthenticationProvider) {
+      LoginAuthenticationProvider loginAuthenticationProvider,
+      TowerNotifier towerNotifier,
+      StorageService storageService) {
     this.towerMapper = towerMapper;
     this.towerRepository = towerRepository;
     this.autoRegisterCity = autoRegisterCity;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
+    this.towerNotifier = towerNotifier;
+    this.storageService = storageService;
   }
 
   public TowerDto createTower(String username, TowerDto towerDto) {
@@ -47,6 +58,9 @@ public class TowerService {
     towerDto.setMemberAccountIds(new ArrayList<>());
     // Initialize moderator ID list
     towerDto.setModeratorAccountIds(new ArrayList<>());
+    // Set default primary and secondary colors
+    towerDto.setPrimaryColor("FFD800");
+    towerDto.setSecondaryColor("5e5d59");
     // Save this new Tower to the database
     Tower tower = towerRepository.save(towerMapper.towerDtoToTower(towerDto));
     // Make the creator of the tower join the tower and return the changed tower
@@ -235,5 +249,76 @@ public class TowerService {
               .build();
     }
     return this.cisWebClient;
+  }
+
+  public Optional<TowerDto> editTower(
+      String towerId, TowerDto towerDto, MultipartFile icon, MultipartFile banner) {
+    if (!towerRepository.existsById(towerId)) {
+      // TODO: Make a proper exception
+      throw new RuntimeException("Tower not found");
+    }
+    Optional<Tower> towerOptional = towerRepository.findById(towerId);
+    if (towerOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    Tower tower = towerOptional.get();
+
+    try {
+      // Update icon and banner depending on what the user uploaded
+      tower = updateIcon(tower, icon);
+      tower = updateBanner(tower, banner);
+    } catch (IOException e) {
+      throw new StorageException("Unable to update banner or icon", e);
+    }
+
+    // Update the Tower name
+    tower.setName(towerDto.getName());
+    // Update the Tower admin account id
+    tower.setAdminAccountId(towerDto.getAdminAccountId());
+    // If it was specified in the request, set the moderators list
+    if (towerDto.getModeratorAccountIds() != null) {
+      tower.setModeratorAccountIds(towerDto.getModeratorAccountIds());
+    }
+    // We don't do anything here with the members list because the members list is only modified
+    // when a user joins or leaves. We shouldn't be editing it manually.
+
+    // Update the colors. We don't bother checking if they're valid hex values.
+    tower.setPrimaryColor(towerDto.getPrimaryColor());
+    tower.setSecondaryColor(towerDto.getSecondaryColor());
+    // Update the Tower in the database
+    TowerDto editedDto =
+        towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
+    // Notify all subscribed clients that this Tower has been edited
+    towerNotifier.notifyEditedTower(editedDto);
+
+    return Optional.of(editedDto);
+  }
+
+  private Tower updateIcon(Tower tower, MultipartFile icon) throws IOException {
+    if (icon != null) {
+      if (icon.getSize() == 0) {
+        tower.setIconUrl("");
+      } else {
+        if (icon.getContentType() == null || !icon.getContentType().equals("image/png")) {
+          throw new UnsupportedFileTypeException(icon.getContentType(), "image/png");
+        }
+        tower.setIconUrl(storageService.saveTowerIcon(icon, tower.getId()));
+      }
+    }
+    return tower;
+  }
+
+  private Tower updateBanner(Tower tower, MultipartFile banner) throws IOException {
+    if (banner != null) {
+      if (banner.getSize() == 0) {
+        tower.setBannerUrl("");
+      } else {
+        if (banner.getContentType() == null || !banner.getContentType().equals("image/png")) {
+          throw new UnsupportedFileTypeException(banner.getContentType(), "image/png");
+        }
+        tower.setBannerUrl(storageService.saveTowerBanner(banner, tower.getId()));
+      }
+    }
+    return tower;
   }
 }

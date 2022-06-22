@@ -19,8 +19,12 @@ public class Tower {
   @Id private String id;
   private String name;
   private String adminAccountId;
-  private List<String> moderatorAccountIds = null;
+  private List<String> moderatorAccountIds;
   private List<String> memberAccountIds;
+  private String iconUrl;
+  private String bannerUrl;
+  private String primaryColor;
+  private String secondaryColor;
 
   @ReadOnlyProperty
   @DocumentReference(lookup = "{'towerId':?#{#self._id} }")
