@@ -1,0 +1,18 @@
+name: Delete Environment (default settings)
+
+on:
+  push
+#on:
+#  pull_request:
+#    branches: [main]
+#    types: [closed, converted_to_draft]
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: strumwolf/delete-deployment-environment@v2
+        with:
+          # ⚠️ The provided token needs permission for admin write:org
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: beacon-cis-pr${{ github.event.number }} beacon-city-pr${{ github.event.number }}
