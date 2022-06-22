@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: strumwolf/delete-deployment-environment@v2
         with:
-          # ⚠️ The provided token needs permission for admin write:org!
-          token: ${{ secrets.ENV_DEL_TOKEN }}
+          # ⚠️ The provided token needs permission for admin write:org
+          token: ${{ secrets.GITHUB_TOKEN }}
           environment: beacon-cis-pr-${{ github.event.number }}
       - run: |
           echo github.event.number = ${{ github.event.number  }}
@@ -23,8 +23,8 @@ jobs:
     steps:
       - uses: strumwolf/delete-deployment-environment@v2
         with:
-          # ⚠️ The provided token needs permission for admin write:org!
-          token: ${{ secrets.ENV_DEL_TOKEN }}
+          # ⚠️ The provided token needs permission for admin write:org
+          token: ${{ secrets.GITHUB_TOKEN }}
           environment: beacon-city-pr-${{ github.event.number }}
       - run: |
           echo github.event.number = ${{ github.event.number  }}
