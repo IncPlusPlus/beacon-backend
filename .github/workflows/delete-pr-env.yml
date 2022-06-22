@@ -1,11 +1,9 @@
-name: Delete Environment (default settings)
+name: Delete PR Environments
 
 on:
-  push
-#on:
-#  pull_request:
-#    branches: [main]
-#    types: [closed, converted_to_draft]
+  pull_request:
+    branches: [main]
+    types: [closed, converted_to_draft]
 
 jobs:
   delete:
@@ -15,4 +13,8 @@ jobs:
         with:
           # ⚠️ The provided token needs permission for admin write:org
           token: ${{ secrets.GITHUB_TOKEN }}
-          environment: beacon-cis-pr${{ github.event.number }} beacon-city-pr${{ github.event.number }}
+          environment: beacon-cis-pr-${{ github.event.number }} beacon-city-pr-${{ github.event.number }}
+      - run: |
+          echo github.event.number = ${{ github.event.number  }}
+          echo github.event.pull_request.number = ${{ github.event.pull_request.number }}
+          echo github.event.issue.number = ${{ github.event.issue.number }}
