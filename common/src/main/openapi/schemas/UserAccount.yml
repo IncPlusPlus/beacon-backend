@@ -13,3 +13,7 @@ properties:
     description: The username associated with the account ID
     type: string
     example: TheOfficialFancySnail
+  profile_picture_url:
+    description: The URL to the profile picture of this user. If this is undefined, null, or empty then you should use a default picture as this user has not set a picture.
+    type: string
+    example: https://something.anotherthing.com/bruh.png
