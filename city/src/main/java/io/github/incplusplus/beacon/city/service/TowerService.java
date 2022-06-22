@@ -11,26 +11,21 @@ import io.github.incplusplus.beacon.city.websocket.notifier.TowerNotifier;
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class TowerService {
-  private static final String CIS_MEMBERSHIPS_ENDPOINT_URI = "/city-cis-intercom/memberships";
   private final TowerMapper towerMapper;
   private final TowerRepository towerRepository;
   private final AutoRegisterCity autoRegisterCity;
+  private final CisCommunicationsService cisCommunicationsService;
   private final LoginAuthenticationProvider loginAuthenticationProvider;
-  private WebClient cisWebClient;
   private final TowerNotifier towerNotifier;
   private final StorageService storageService;
 
@@ -39,12 +34,14 @@ public class TowerService {
       TowerMapper towerMapper,
       TowerRepository towerRepository,
       AutoRegisterCity autoRegisterCity,
+      CisCommunicationsService cisCommunicationsService,
       LoginAuthenticationProvider loginAuthenticationProvider,
       TowerNotifier towerNotifier,
       StorageService storageService) {
     this.towerMapper = towerMapper;
     this.towerRepository = towerRepository;
     this.autoRegisterCity = autoRegisterCity;
+    this.cisCommunicationsService = cisCommunicationsService;
     this.loginAuthenticationProvider = loginAuthenticationProvider;
     this.towerNotifier = towerNotifier;
     this.storageService = storageService;
@@ -129,15 +126,7 @@ public class TowerService {
     if (!userPartOfCityBeforeJoiningThisTower) {
       // Let the CIS know that the user is now "a member of this City"
       try {
-        List<String> membersOfCity =
-            getCisWebClient()
-                .put()
-                //            .contentType(MediaType.APPLICATION_JSON)
-                .uri(CIS_MEMBERSHIPS_ENDPOINT_URI)
-                .bodyValue(List.of(userId))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-                .block(Duration.ofSeconds(30));
+        List<String> membersOfCity = cisCommunicationsService.addCityMembers(userId);
       } catch (Exception e) {
         // TODO: Make a proper exception that reflects that the City-to-CIS communication failed. It
         //  should cause a 500 error as this is an internal issue.
@@ -170,15 +159,7 @@ public class TowerService {
     if (userWillNoLongerBeMemberOfAnyTowersWithinThisCity) {
       // Let the CIS know to remove them from the "members of this City"
       try {
-        List<String> membersOfCity =
-            getCisWebClient()
-                .method(HttpMethod.DELETE)
-                //            .contentType(MediaType.APPLICATION_JSON)
-                .uri(CIS_MEMBERSHIPS_ENDPOINT_URI)
-                .bodyValue(List.of(userId))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-                .block(Duration.ofSeconds(30));
+        List<String> membersOfCity = cisCommunicationsService.removeCityMembers(List.of(userId));
       } catch (Exception e) {
         // TODO: Make a proper exception that reflects that the City-to-CIS communication failed. It
         // should cause a 500 error as this is an internal issue.
@@ -215,14 +196,7 @@ public class TowerService {
       // Let the CIS know to remove the "members of this City" who are members of this Tower and no
       // other Towers within this City.
       List<String> membersOfCity =
-          getCisWebClient()
-              .method(HttpMethod.DELETE)
-              //            .contentType(MediaType.APPLICATION_JSON)
-              .uri(CIS_MEMBERSHIPS_ENDPOINT_URI)
-              .bodyValue(membersUniqueToThisTower)
-              .retrieve()
-              .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-              .block(Duration.ofSeconds(30));
+          cisCommunicationsService.removeCityMembers(membersUniqueToThisTower);
       // endregion
       towerRepository.deleteById(towerId);
       // TODO: Delete the channels in this Tower (and the messages too)
@@ -230,25 +204,6 @@ public class TowerService {
       // TODO: Make this a proper exception
       throw new RuntimeException("Tower not found");
     }
-  }
-
-  /**
-   * @return the WebClient for interacting with the CIS. This isn't put into a field in the
-   *     constructor because the City ID and password aren't initialized at start and the
-   *     setBasicAuth method will throw an exception if either of its parameters are null.
-   */
-  private WebClient getCisWebClient() {
-    if (this.cisWebClient == null) {
-      this.cisWebClient =
-          WebClient.builder()
-              .baseUrl(autoRegisterCity.getCISUrl())
-              .defaultHeaders(
-                  header ->
-                      header.setBasicAuth(
-                          autoRegisterCity.getCityId(), autoRegisterCity.getCityCISPassword()))
-              .build();
-    }
-    return this.cisWebClient;
   }
 
   public Optional<TowerDto> editTower(

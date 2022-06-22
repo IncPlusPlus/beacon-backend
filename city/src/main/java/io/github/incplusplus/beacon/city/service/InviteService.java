@@ -2,31 +2,25 @@ package io.github.incplusplus.beacon.city.service;
 
 import io.github.incplusplus.beacon.city.generated.dto.TowerInviteDto;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
-import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class InviteService {
-  private static final String CIS_INVITES_ENDPOINT_URI = "/city-cis-intercom/invites";
   private final LoginAuthenticationProvider loginAuthenticationProvider;
-  private final AutoRegisterCity autoRegisterCity;
+  private final CisCommunicationsService cisCommunicationsService;
   private final TowerService towerService;
-  private WebClient cisWebClient;
 
   @Autowired
   public InviteService(
       LoginAuthenticationProvider loginAuthenticationProvider,
-      AutoRegisterCity autoRegisterCity,
+      CisCommunicationsService cisCommunicationsService,
       TowerService towerService) {
     this.loginAuthenticationProvider = loginAuthenticationProvider;
-    this.autoRegisterCity = autoRegisterCity;
+    this.cisCommunicationsService = cisCommunicationsService;
     this.towerService = towerService;
   }
 
@@ -36,10 +30,12 @@ public class InviteService {
       Integer expiryTime,
       String expiryTimeUnit,
       Integer maxUses) {
+    // TODO: We don't check that the inviter is a member of the tower they're making an invite for.
     Instant properExpiryTime = null;
     if (expiryTime > 0) {
       properExpiryTime = Instant.now().plus(expiryTime, ChronoUnit.valueOf(expiryTimeUnit));
     }
+    // This is the info for the invite besides the ID
     TowerInviteDto inviteDto =
         new TowerInviteDto()
             .inviter(loginAuthenticationProvider.getIdForUsername(inviterUsername))
@@ -47,15 +43,8 @@ public class InviteService {
             .expiryDate(properExpiryTime)
             .maxUses(maxUses);
 
-    // TODO: Add error handling to properly return 400 errors
-    return getCisWebClient()
-        .post()
-        //            .contentType(MediaType.APPLICATION_JSON)
-        .uri(CIS_INVITES_ENDPOINT_URI)
-        .bodyValue(inviteDto)
-        .retrieve()
-        .bodyToMono(TowerInviteDto.class)
-        .block(Duration.ofSeconds(30));
+    // With the desired details we've laid out, create the invite on the CIS
+    return cisCommunicationsService.generateInvite(inviteDto);
   }
 
   /**
@@ -75,14 +64,7 @@ public class InviteService {
 
     // Tell the CIS to increment the number of uses of the invite code + retrieve info about it
     // TODO: Add error handling
-    TowerInviteDto returnedInvite =
-        getCisWebClient()
-            .put()
-            //            .contentType(MediaType.APPLICATION_JSON)
-            .uri(CIS_INVITES_ENDPOINT_URI + "/" + towerInviteCode)
-            .retrieve()
-            .bodyToMono(TowerInviteDto.class)
-            .block(Duration.ofSeconds(30));
+    TowerInviteDto returnedInvite = cisCommunicationsService.useInvite(towerInviteCode);
     if (returnedInvite == null) {
       // TODO: Make a proper exception
       throw new RuntimeException("Couldn't retrieve info about this invite code from the CIS");
@@ -91,51 +73,11 @@ public class InviteService {
   }
 
   public List<TowerInviteDto> listInvitesForTower(String towerId) {
-    // TODO: Add error handling
-    return getCisWebClient()
-        .get()
-        //            .contentType(MediaType.APPLICATION_JSON)
-        .uri(
-            uriBuilder ->
-                uriBuilder.path(CIS_INVITES_ENDPOINT_URI).queryParam("tower-id", towerId).build())
-        .retrieve()
-        .bodyToMono(new ParameterizedTypeReference<List<TowerInviteDto>>() {})
-        .block(Duration.ofSeconds(30));
+    return cisCommunicationsService.getInvitesForTower(towerId);
   }
 
   public TowerInviteDto revokeInvite(String towerId, String towerInviteCode) {
     // TODO: Add error handling
-    return getCisWebClient()
-        .delete()
-        //            .contentType(MediaType.APPLICATION_JSON)
-        .uri(
-            uriBuilder ->
-                uriBuilder
-                    .path(CIS_INVITES_ENDPOINT_URI + "/" + towerInviteCode)
-                    // Unused
-                    .queryParam("tower-id", towerId)
-                    .build())
-        .retrieve()
-        .bodyToMono(TowerInviteDto.class)
-        .block(Duration.ofSeconds(30));
-  }
-
-  /**
-   * @return the WebClient for interacting with the CIS. This isn't put into a field in the
-   *     constructor because the City ID and password aren't initialized at start and the
-   *     setBasicAuth method will throw an exception if either of its parameters are null.
-   */
-  private WebClient getCisWebClient() {
-    if (this.cisWebClient == null) {
-      this.cisWebClient =
-          WebClient.builder()
-              .baseUrl(autoRegisterCity.getCISUrl())
-              .defaultHeaders(
-                  header ->
-                      header.setBasicAuth(
-                          autoRegisterCity.getCityId(), autoRegisterCity.getCityCISPassword()))
-              .build();
-    }
-    return this.cisWebClient;
+    return cisCommunicationsService.revokeInvite(towerId, towerInviteCode);
   }
 }

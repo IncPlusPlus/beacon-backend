@@ -68,6 +68,8 @@ public class TowerInviteService {
   }
 
   public Optional<TowerInviteDto> revokeInvite(String towerInviteCode) {
+    // TODO: We don't check if the tower that the City sends is the same as the one in the invite.
+    //  this should be fixed later. It should also be checked if the City matches.
     Optional<TowerInvite> inviteOptional = inviteRepository.findByInviteCode(towerInviteCode);
     TowerInvite invite;
     if (inviteOptional.isPresent()) {
