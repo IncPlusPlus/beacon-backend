@@ -8,12 +8,12 @@ import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
 import io.github.incplusplus.beacon.city.persistence.model.Message;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.websocket.notifier.MessageNotifier;
+import io.github.incplusplus.beacon.common.exception.EntityDoesNotExistException;
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,12 +55,10 @@ public class MessageService {
       List<MultipartFile> attachments,
       MessageDto messageDto) {
     if (!towerRepository.existsById(towerId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
+      throw new EntityDoesNotExistException("Tower", towerId);
     }
     if (!channelRepository.existsById(channelId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Channel not found");
+      throw new EntityDoesNotExistException("Channel", channelId);
     }
     // Grab the sender's ID
     String senderId = loginAuthenticationProvider.getIdForUsername(senderUsername);
@@ -100,32 +98,29 @@ public class MessageService {
   }
 
   public List<MessageDto> getMessages(String towerId, String channelId) {
-    if (!towerRepository.existsById(towerId)) { // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
+    if (!towerRepository.existsById(towerId)) {
+      throw new EntityDoesNotExistException("Tower", towerId);
     }
-    if (!channelRepository.existsById(channelId)) { // TODO: Make a proper exception
-      throw new RuntimeException("Channel not found");
+    if (!channelRepository.existsById(channelId)) {
+      throw new EntityDoesNotExistException("Channel", channelId);
     }
     return messageRepository.findAllByTowerIdAndChannelId(towerId, channelId).stream()
         .map(messageMapper::messageToMessageDto)
         .collect(Collectors.toList());
   }
 
-  public Optional<MessageDto> editMessage(
+  public MessageDto editMessage(
       String towerId, String channelId, String messageId, MessageDto messageDto) {
     if (!towerRepository.existsById(towerId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
+      throw new EntityDoesNotExistException("Tower", towerId);
     }
     if (!channelRepository.existsById(channelId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Channel not found");
+      throw new EntityDoesNotExistException("Channel", channelId);
     }
-    Optional<Message> messageOptional = messageRepository.findById(messageId);
-    if (messageOptional.isEmpty()) {
-      return Optional.empty();
-    }
-    Message message = messageOptional.get();
+    Message message =
+        messageRepository
+            .findById(messageId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Message", messageId));
     // Users may only edit the message body. We don't let them sneakily modify any other fields
     message.setMessageBody(messageDto.getMessageBody());
     message.setEdited(true);
@@ -134,23 +129,25 @@ public class MessageService {
     // Notify all subscribed clients that this message has been edited
     messageNotifier.notifyEditedMessage(editedDto);
     // Return the DTO
-    return Optional.of(editedDto);
+    return editedDto;
   }
 
-  public Optional<MessageDto> deleteMessage(String towerId, String channelId, String messageId) {
+  public MessageDto deleteMessage(String towerId, String channelId, String messageId) {
     if (!towerRepository.existsById(towerId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
+      throw new EntityDoesNotExistException("Tower", towerId);
     }
     if (!channelRepository.existsById(channelId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Channel not found");
+      throw new EntityDoesNotExistException("Channel", channelId);
     }
-    Optional<MessageDto> deletedOptional =
-        messageRepository.deleteMessageById(messageId).map(messageMapper::messageToMessageDto);
-    // If it's not empty, we proceed to return the deleted message and dispatch the notification
-    deletedOptional.ifPresent(messageNotifier::notifyDeletedMessage);
-    return deletedOptional;
+    // Get the value from the Optional and throw if the message by that ID doesn't exist
+    MessageDto deleted =
+        messageRepository
+            .deleteMessageById(messageId)
+            .map(messageMapper::messageToMessageDto)
+            .orElseThrow(() -> new EntityDoesNotExistException("Message", messageId));
+    // Notify all clients that this message was deleted
+    messageNotifier.notifyDeletedMessage(deleted);
+    return deleted;
   }
 
   /**
