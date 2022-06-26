@@ -81,7 +81,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));
 
-    return getFileEdgeUrl(fileKey);
+    return getFileOriginUrl(fileKey);
   }
 
   private String getFileOriginUrl(String fileKey) {

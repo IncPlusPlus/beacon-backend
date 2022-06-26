@@ -143,7 +143,7 @@ public class UserService {
     if (accountOptional.isPresent()) {
       User user = accountOptional.get();
       // Update the profile picture URL on their account
-      user.setProfilePictureUrl(getProfilePictureEdgeUrlForId(userId));
+      user.setProfilePictureUrl(getProfilePictureUrlForId(userId));
       // Save the changes, and put it back in the Optional which will then be converted to a DTO
       accountOptional = Optional.of(userRepository.save(user));
     }
