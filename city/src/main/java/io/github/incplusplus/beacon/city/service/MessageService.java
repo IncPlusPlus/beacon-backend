@@ -11,6 +11,7 @@ import io.github.incplusplus.beacon.city.websocket.notifier.MessageNotifier;
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,18 +72,24 @@ public class MessageService {
     newMessage.setChannelId(channelId);
     newMessage.setSenderId(senderId);
     // Upload the attachments and grab their URLs
-    List<String> attachmentUrls =
-        attachments.stream()
-            .map(
-                multipartFile -> {
-                  try {
-                    return storageService.saveUserAttachment(
-                        multipartFile, towerId, channelId, senderId);
-                  } catch (IOException e) {
-                    throw new StorageException(e);
-                  }
-                })
-            .toList();
+    List<String> attachmentUrls;
+    if (attachments != null) {
+      attachmentUrls =
+          attachments.stream()
+              .map(
+                  multipartFile -> {
+                    try {
+                      return storageService.saveUserAttachment(
+                          multipartFile, towerId, channelId, senderId);
+                    } catch (IOException e) {
+                      throw new StorageException(e);
+                    }
+                  })
+              .toList();
+    } else {
+      attachmentUrls = new ArrayList<>();
+    }
+
     // Add the attachment URLs to the message object before persisting it.
     newMessage.setAttachments(attachmentUrls);
     newMessage = messageRepository.save(newMessage);
