@@ -60,7 +60,7 @@ dependencies {
     // Because Guava has some great utility methods
     implementation 'com.google.guava:guava:31.1-jre'
     // For storing profile pictures
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.232'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.248'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
