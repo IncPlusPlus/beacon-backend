@@ -23,18 +23,21 @@ public interface StorageService {
    *
    * @param icon a PNG file
    * @param towerId the ID of the tower
+   * @param existingUrl the current URL of the tower icon
    * @return a URL that points to the newly-uploaded file
    * @throws IOException if the file couldn't be uploaded
    */
-  String saveTowerIcon(MultipartFile icon, String towerId) throws IOException;
+  String saveTowerIcon(MultipartFile icon, String towerId, String existingUrl) throws IOException;
 
   /**
    * Upload an image to be used as the banner for a tower.
    *
    * @param banner a PNG file
    * @param towerId the ID of the tower
+   * @param existingUrl the current URL of the tower banner
    * @return a URL that points to the newly-uploaded file
    * @throws IOException if the file couldn't be uploaded
    */
-  String saveTowerBanner(MultipartFile banner, String towerId) throws IOException;
+  String saveTowerBanner(MultipartFile banner, String towerId, String existingUrl)
+      throws IOException;
 }

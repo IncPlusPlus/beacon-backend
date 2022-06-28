@@ -12,6 +12,8 @@ import com.github.f4b6a3.tsid.TsidCreator;
 import io.github.incplusplus.beacon.city.properties.DigitalOceanStorageProperties;
 import io.github.incplusplus.beacon.city.service.StorageService;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @ConditionalOnProperty(prefix = "do.spaces", value = "key")
 public class DigitalOceanSpacesStorageImpl implements StorageService {
+  private final Pattern bannerOrIconUrlPattern;
   private final DigitalOceanStorageProperties props;
 
   private final AmazonS3 s3Client;
@@ -38,6 +41,28 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
                 new EndpointConfiguration(props.getEndpoint(), props.getRegion()))
             .withCredentials(new AWSStaticCredentialsProvider(creds))
             .build();
+    // This is awful lol
+    bannerOrIconUrlPattern =
+        Pattern.compile(
+            "("
+                // Basically this gets the origin bucket URL
+                + "https://"
+                + props.getBucket()
+                + "."
+                + props.getEndpoint()
+                + "/"
+                // OR
+                + "|"
+                // the cdn URL
+                + props.getBucket()
+                + "."
+                + props.getRegion()
+                + ".cdn."
+                + getDomainFromEndpoint()
+                + "/"
+                + ")"
+                // followed by the elements of the file path
+                + "([a-f\\d]+)/(icon|banner)-(\\d+)\\.png");
   }
 
   @Override
@@ -60,28 +85,71 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   }
 
   @Override
-  public String saveTowerIcon(MultipartFile icon, String towerId) throws IOException {
-    return saveTowerOrBanner(icon, towerId, true);
+  public String saveTowerIcon(MultipartFile icon, String towerId, String existingUrl)
+      throws IOException {
+    return saveTowerIconOrBanner(icon, towerId, true, existingUrl);
   }
 
   @Override
-  public String saveTowerBanner(MultipartFile banner, String towerId) throws IOException {
-    return saveTowerOrBanner(banner, towerId, false);
+  public String saveTowerBanner(MultipartFile banner, String towerId, String existingUrl)
+      throws IOException {
+    return saveTowerIconOrBanner(banner, towerId, false, existingUrl);
   }
 
-  private String saveTowerOrBanner(MultipartFile file, String towerId, boolean isIcon)
-      throws IOException {
+  private String saveTowerIconOrBanner(
+      MultipartFile file, String towerId, boolean isIcon, String existingUrl) throws IOException {
+    // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
+    long tsid = TsidCreator.getTsid256().toLong();
+    // Delete the existing file if it exists
+    try {
+      s3Client.deleteObject(props.getBucket(), getFileKeyForIconOrBannerUrl(existingUrl));
+    } catch (IllegalStateException ignored) {
+      // It may be the case that the URL hasn't been set yet. We can ignore this.
+    }
+
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentLength(file.getInputStream().available());
     if (file.getContentType() != null && !"".equals(file.getContentType())) {
       metadata.setContentType(file.getContentType());
     }
-    String fileKey = towerId + "/" + (isIcon ? "icon.png" : "banner.png");
+    String fileKey = towerId + "/" + (isIcon ? "icon" : "banner") + "-" + tsid + ".png";
     s3Client.putObject(
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));
 
-    return getFileOriginUrl(fileKey);
+    return getIconOrBannerEdgeUrl(fileKey, tsid, isIcon);
+  }
+
+  private String getIconOrBannerOriginUrl(String towerId, long tsid, boolean isIcon) {
+    // https://beaconcdn.nyc3.digitaloceanspaces.com/623de7d41b2b8c392b5e23d0/icon-12312321.png
+    return "https://"
+        + props.getBucket()
+        + "."
+        + props.getEndpoint()
+        + "/"
+        + towerId
+        + "/"
+        + (isIcon ? "icon" : "banner")
+        + "-"
+        + tsid
+        + ".png";
+  }
+
+  private String getIconOrBannerEdgeUrl(String towerId, long tsid, boolean isIcon) {
+    // https://beaconcdn.nyc3.cdn.digitaloceanspaces.com/623de7d41b2b8c392b5e23d0/banner-123241.png
+    return "https://"
+        + props.getBucket()
+        + "."
+        + props.getRegion()
+        + ".cdn."
+        + getDomainFromEndpoint()
+        + "/"
+        + towerId
+        + "/"
+        + (isIcon ? "icon" : "banner")
+        + "-"
+        + tsid
+        + ".png";
   }
 
   private String getFileOriginUrl(String fileKey) {
@@ -95,7 +163,22 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
         + props.getBucket()
         + "."
         + props.getRegion()
-        + ".cdn.digitaloceanspaces.com/"
+        + ".cdn."
+        + getDomainFromEndpoint()
+        + "/"
         + fileKey;
+  }
+
+  private String getDomainFromEndpoint() {
+    return props.getEndpoint().substring(props.getEndpoint().indexOf("."));
+  }
+
+  private String getFileKeyForIconOrBannerUrl(String url) {
+    Matcher matcher = bannerOrIconUrlPattern.matcher(url);
+    if (!matcher.find()) {
+      throw new IllegalStateException(
+          "Icon or banner for url '" + url + "' doesn't seem quite right. Unable to delete it.");
+    }
+    return matcher.group(2) + "/" + matcher.group(3) + "-" + matcher.group(4) + ".png";
   }
 }

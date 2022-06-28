@@ -257,7 +257,7 @@ public class TowerService {
         if (icon.getContentType() == null || !icon.getContentType().equals("image/png")) {
           throw new UnsupportedFileTypeException(icon.getContentType(), "image/png");
         }
-        tower.setIconUrl(storageService.saveTowerIcon(icon, tower.getId()));
+        tower.setIconUrl(storageService.saveTowerIcon(icon, tower.getId(), tower.getIconUrl()));
       }
     }
     return tower;
@@ -271,7 +271,8 @@ public class TowerService {
         if (banner.getContentType() == null || !banner.getContentType().equals("image/png")) {
           throw new UnsupportedFileTypeException(banner.getContentType(), "image/png");
         }
-        tower.setBannerUrl(storageService.saveTowerBanner(banner, tower.getId()));
+        tower.setBannerUrl(
+            storageService.saveTowerBanner(banner, tower.getId(), tower.getBannerUrl()));
       }
     }
     return tower;

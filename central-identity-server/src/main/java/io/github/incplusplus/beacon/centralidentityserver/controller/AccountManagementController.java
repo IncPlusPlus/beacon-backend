@@ -54,7 +54,7 @@ public class AccountManagementController implements AccountManagementApi {
       throw new UnsupportedFileTypeException(picture.getContentType(), "image/png");
     }
     return ResponseEntity.of(
-        userService.store(
+        userService.updateProfilePicture(
             picture,
             userService
                 .getAccountByUsername(authenticationFacade.getAuthentication().getName())

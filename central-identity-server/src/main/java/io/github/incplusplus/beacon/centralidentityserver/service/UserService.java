@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.github.f4b6a3.tsid.TsidCreator;
 import io.github.incplusplus.beacon.centralidentityserver.exception.UserAlreadyExistsException;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateAccountRequestDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAccountDto;
@@ -17,6 +18,8 @@ import io.github.incplusplus.beacon.centralidentityserver.persistence.model.User
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +30,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional
 public class UserService {
+
+  /** Group 1 is the endpoint. Group 2 is the user ID. Group 3 is the TSID. */
+  private final Pattern profilePictureUrlPattern =
+      Pattern.compile(
+          "(https://beaconcdn.nyc3.digitaloceanspaces.com/pfps/|https://beaconcdn.nyc3.cdn.digitaloceanspaces.com/pfps/)([a-f\\d]+)/(\\d+)\\.png");
 
   private final AmazonS3 s3Client;
 
@@ -122,8 +130,31 @@ public class UserService {
     return userRepository.findByUsername(username);
   }
 
-  public Optional<UserAccountDto> store(MultipartFile picture, String userId) {
-    String fileKey = "pfps/" + userId + ".png";
+  public Optional<UserAccountDto> updateProfilePicture(MultipartFile picture, String userId) {
+    deleteCurrentProfilePicture(userId);
+    return setProfilePicture(picture, userId);
+  }
+
+  private void deleteCurrentProfilePicture(String userId) {
+    Optional<User> userOptional = getAccountById(userId);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      try {
+        s3Client.deleteObject(
+            "beaconcdn", getFileKeyForProfilePictureUrl(user.getProfilePictureUrl()));
+      } catch (IllegalStateException ignored) {
+        // The pfp may not have been set before or is some wack URL. Just ignore it.
+        // It's okay if we can't figure out something to delete.
+      }
+      user.setProfilePictureUrl("");
+      userRepository.save(user);
+    }
+  }
+
+  private Optional<UserAccountDto> setProfilePicture(MultipartFile picture, String userId) {
+    // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
+    long tsid = TsidCreator.getTsid256().toLong();
+    String fileKey = "pfps/" + userId + "/" + tsid + ".png";
     ObjectMetadata metadata = new ObjectMetadata();
     try {
       metadata.setContentLength(picture.getInputStream().available());
@@ -143,18 +174,27 @@ public class UserService {
     if (accountOptional.isPresent()) {
       User user = accountOptional.get();
       // Update the profile picture URL on their account
-      user.setProfilePictureUrl(getProfilePictureUrlForId(userId));
+      user.setProfilePictureUrl(getProfilePictureEdgeUrlForId(userId, tsid));
       // Save the changes, and put it back in the Optional which will then be converted to a DTO
       accountOptional = Optional.of(userRepository.save(user));
     }
     return accountOptional.map(userMapper::userToUserDto);
   }
 
-  private String getProfilePictureUrlForId(String userId) {
-    return "https://beaconcdn.nyc3.digitaloceanspaces.com/pfps/" + userId + ".png";
+  private String getFileKeyForProfilePictureUrl(String url) {
+    Matcher matcher = profilePictureUrlPattern.matcher(url);
+    if (!matcher.find()) {
+      throw new IllegalStateException(
+          "The current pfp URL '" + url + "' is unrecognized. Someone pranked you good.");
+    }
+    return "pfps/" + matcher.group(2) + "/" + matcher.group(3) + ".png";
   }
 
-  private String getProfilePictureEdgeUrlForId(String userId) {
-    return "https://beaconcdn.nyc3.cdn.digitaloceanspaces.com/pfps/" + userId + ".png";
+  private String getProfilePictureUrlForId(String userId, long tsid) {
+    return "https://beaconcdn.nyc3.digitaloceanspaces.com/pfps/" + userId + "/" + tsid + ".png";
+  }
+
+  private String getProfilePictureEdgeUrlForId(String userId, long tsid) {
+    return "https://beaconcdn.nyc3.cdn.digitaloceanspaces.com/pfps/" + userId + "/" + tsid + ".png";
   }
 }
