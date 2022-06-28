@@ -1,6 +1,6 @@
 plugins {
     // https://stackoverflow.com/a/26240341/1687436
-    id "com.diffplug.spotless" version "6.7.0" apply false
+    id "com.diffplug.spotless" version "6.7.2" apply false
     // https://axion-release-plugin.readthedocs.io/en/latest/configuration/basic_usage/#multi-module-project
     id 'pl.allegro.tech.build.axion-release' version '1.13.6'
 }
