@@ -87,16 +87,16 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   @Override
   public String saveTowerIcon(MultipartFile icon, String towerId, String existingUrl)
       throws IOException {
-    return saveTowerOrBanner(icon, towerId, true, existingUrl);
+    return saveTowerIconOrBanner(icon, towerId, true, existingUrl);
   }
 
   @Override
   public String saveTowerBanner(MultipartFile banner, String towerId, String existingUrl)
       throws IOException {
-    return saveTowerOrBanner(banner, towerId, false, existingUrl);
+    return saveTowerIconOrBanner(banner, towerId, false, existingUrl);
   }
 
-  private String saveTowerOrBanner(
+  private String saveTowerIconOrBanner(
       MultipartFile file, String towerId, boolean isIcon, String existingUrl) throws IOException {
     // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
     long tsid = TsidCreator.getTsid256().toLong();
@@ -117,7 +117,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));
 
-    return getFileOriginUrl(fileKey);
+    return getIconOrBannerEdgeUrl(fileKey, tsid, isIcon);
   }
 
   private String getIconOrBannerOriginUrl(String towerId, long tsid, boolean isIcon) {
