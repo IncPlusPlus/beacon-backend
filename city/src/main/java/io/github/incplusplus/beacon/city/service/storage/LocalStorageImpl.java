@@ -134,6 +134,9 @@ public class LocalStorageImpl implements StorageService {
   }
 
   private void deleteOldBannerOrIcon(String url) {
+    if (url == null || url.isBlank()) {
+      return;
+    }
     Matcher matcher = bannerOrIconUrlPattern.matcher(url);
     if (!matcher.find()) {
       throw new IllegalStateException("Couldn't determine previous URL for banner or icon.");
