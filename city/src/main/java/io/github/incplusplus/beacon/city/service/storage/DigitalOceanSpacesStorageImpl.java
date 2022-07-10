@@ -172,7 +172,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   }
 
   private String getDomainFromEndpoint() {
-    return props.getEndpoint().substring(props.getEndpoint().indexOf("."));
+    return props.getEndpoint().substring(props.getEndpoint().indexOf(".") + 1);
   }
 
   private String getFileKeyForIconOrBannerUrl(String url) {
