@@ -101,7 +101,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
     // This isn't exactly the smartest way to use a TSID, but it's good enough for now.
     long tsid = TsidCreator.getTsid256().toLong();
     // Delete the existing file if it exists
-    if (existingUrl == null || existingUrl.isBlank()) {
+    if (existingUrl != null && !existingUrl.isBlank()) {
       try {
         s3Client.deleteObject(props.getBucket(), getFileKeyForIconOrBannerUrl(existingUrl));
       } catch (IllegalStateException ignored) {
