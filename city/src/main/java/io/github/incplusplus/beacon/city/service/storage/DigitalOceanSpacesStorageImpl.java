@@ -119,7 +119,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
         new PutObjectRequest(props.getBucket(), fileKey, file.getInputStream(), metadata)
             .withCannedAcl(CannedAccessControlList.PublicRead));
 
-    return getIconOrBannerEdgeUrl(fileKey, tsid, isIcon);
+    return getIconOrBannerEdgeUrl(towerId, tsid, isIcon);
   }
 
   private String getIconOrBannerOriginUrl(String towerId, long tsid, boolean isIcon) {
@@ -172,7 +172,7 @@ public class DigitalOceanSpacesStorageImpl implements StorageService {
   }
 
   private String getDomainFromEndpoint() {
-    return props.getEndpoint().substring(props.getEndpoint().indexOf("."));
+    return props.getEndpoint().substring(props.getEndpoint().indexOf(".") + 1);
   }
 
   private String getFileKeyForIconOrBannerUrl(String url) {
