@@ -1,6 +1,8 @@
 package io.github.incplusplus.beacon.city.service;
 
 import com.google.common.collect.Streams;
+import io.github.incplusplus.beacon.city.exception.CisCommunicationsException;
+import io.github.incplusplus.beacon.city.exception.InvalidRequestException;
 import io.github.incplusplus.beacon.city.generated.dto.TowerDto;
 import io.github.incplusplus.beacon.city.mapper.TowerMapper;
 import io.github.incplusplus.beacon.city.persistence.dao.TowerRepository;
@@ -8,12 +10,12 @@ import io.github.incplusplus.beacon.city.persistence.model.Tower;
 import io.github.incplusplus.beacon.city.security.LoginAuthenticationProvider;
 import io.github.incplusplus.beacon.city.spring.AutoRegisterCity;
 import io.github.incplusplus.beacon.city.websocket.notifier.TowerNotifier;
+import io.github.incplusplus.beacon.common.exception.EntityDoesNotExistException;
 import io.github.incplusplus.beacon.common.exception.StorageException;
 import io.github.incplusplus.beacon.common.exception.UnsupportedFileTypeException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,13 +72,11 @@ public class TowerService {
         .collect(Collectors.toList());
   }
 
-  public Optional<TowerDto> getTower(String towerId) {
-    Optional<TowerDto> towerDto =
-        towerRepository
-            .findById(towerId)
-            .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()));
-    towerDto.ifPresent(dto -> dto.setCityId(autoRegisterCity.getCityId()));
-    return towerDto;
+  public TowerDto getTower(String towerId) {
+    return towerRepository
+        .findById(towerId)
+        .map(tower -> towerMapper.towerToTowerDto(tower, autoRegisterCity.getCityId()))
+        .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
   }
 
   /**
@@ -99,25 +99,23 @@ public class TowerService {
 
   public boolean isUserMemberOfTower(String username, String towerId) {
     String userId = loginAuthenticationProvider.getIdForUsername(username);
-    Optional<Tower> towerOptional = towerRepository.findById(towerId);
-    if (towerOptional.isEmpty()) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
-    }
-    return towerOptional.get().getMemberAccountIds().contains(userId);
+    Tower tower =
+        towerRepository
+            .findById(towerId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
+    return tower.getMemberAccountIds().contains(userId);
   }
 
   public TowerDto joinTower(String username, String towerId) {
     String userId = loginAuthenticationProvider.getIdForUsername(username);
-    Optional<Tower> towerOptional = towerRepository.findById(towerId);
-    if (towerOptional.isEmpty()) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
-    }
-    Tower tower = towerOptional.get();
+    Tower tower =
+        towerRepository
+            .findById(towerId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
     if (tower.getMemberAccountIds().contains(userId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("User is already a member of that tower");
+      throw new InvalidRequestException(
+          "User '%s' (ID: %s) is already a member of Tower '%s' (ID: %s)."
+              .formatted(username, userId, tower.getName(), towerId));
     }
     // region Contact the CIS to add a new "member of this City" if applicable
     boolean userPartOfCityBeforeJoiningThisTower =
@@ -128,9 +126,9 @@ public class TowerService {
       try {
         List<String> membersOfCity = cisCommunicationsService.addCityMembers(userId);
       } catch (Exception e) {
-        // TODO: Make a proper exception that reflects that the City-to-CIS communication failed. It
-        //  should cause a 500 error as this is an internal issue.
-        throw new RuntimeException(e);
+        throw new CisCommunicationsException(
+            "trying to let the CIS know that the current user is now a member of a Tower within this City",
+            e);
       }
     }
     // endregion
@@ -140,16 +138,13 @@ public class TowerService {
 
   public TowerDto leaveTower(String username, String towerId) {
     String userId = loginAuthenticationProvider.getIdForUsername(username);
-    Optional<Tower> towerOptional = towerRepository.findById(towerId);
-    if (towerOptional.isEmpty()) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
-    }
-    Tower tower = towerOptional.get();
+    Tower tower =
+        towerRepository
+            .findById(towerId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
     if (!tower.getMemberAccountIds().contains(userId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException(
-          "User is no longer in that tower. Can't leave a tower you weren't even in.");
+      throw new InvalidRequestException(
+          "User is no longer in that Tower. Can't leave a Tower you weren't even in.");
     }
     // region Contact the CIS to remove the "member of this City" if applicable
     boolean userWillNoLongerBeMemberOfAnyTowersWithinThisCity =
@@ -161,9 +156,9 @@ public class TowerService {
       try {
         List<String> membersOfCity = cisCommunicationsService.removeCityMembers(List.of(userId));
       } catch (Exception e) {
-        // TODO: Make a proper exception that reflects that the City-to-CIS communication failed. It
-        // should cause a 500 error as this is an internal issue.
-        throw new RuntimeException(e);
+        throw new CisCommunicationsException(
+            "trying to let the CIS know that the current user is no longer a member of any Towers within this City",
+            e);
       }
     }
     // endregion
@@ -172,51 +167,47 @@ public class TowerService {
   }
 
   public void deleteTower(String towerId) {
-    if (towerRepository.existsById(towerId)) {
-      // region Contact the CIS to remove "members of this City" if applicable
-      // Get the list of members in this specific Tower
-      @SuppressWarnings("OptionalGetWithoutIsPresent")
-      List<String> membersOfThisTower =
-          towerRepository.findById(towerId).get().getMemberAccountIds();
-      // Get the list of members of all towers except this one
-      List<String> membersOfOtherTowers =
-          towerRepository.findTowersByIdIsNot(towerId).stream()
-              // Create a stream of all the members of all the selected Towers
-              .flatMap(tower -> tower.getMemberAccountIds().stream())
-              // Remove duplicates
-              .distinct()
-              .toList();
-      // Get the list of members who are unique to this Tower and aren't members of any other
-      // Tower within this City.
-      List<String> membersUniqueToThisTower =
-          membersOfOtherTowers.stream()
-              .filter(member -> !membersOfOtherTowers.contains(member))
-              .toList();
+    Tower tower =
+        towerRepository
+            .findById(towerId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
+    // region Contact the CIS to remove "members of this City" if applicable
+    // Get the list of members in this specific Tower
+    List<String> membersOfThisTower = tower.getMemberAccountIds();
+    // Get the list of members of all towers except this one
+    List<String> membersOfOtherTowers =
+        towerRepository.findTowersByIdIsNot(towerId).stream()
+            // Create a stream of all the members of all the selected Towers
+            .flatMap(thisTower -> thisTower.getMemberAccountIds().stream())
+            // Remove duplicates
+            .distinct()
+            .toList();
+    // Get the list of members who are unique to this Tower and aren't members of any other
+    // Tower within this City.
+    List<String> membersUniqueToThisTower =
+        membersOfOtherTowers.stream()
+            .filter(member -> !membersOfOtherTowers.contains(member))
+            .toList();
 
-      // Let the CIS know to remove the "members of this City" who are members of this Tower and no
-      // other Towers within this City.
-      List<String> membersOfCity =
-          cisCommunicationsService.removeCityMembers(membersUniqueToThisTower);
-      // endregion
-      towerRepository.deleteById(towerId);
-      // TODO: Delete the channels in this Tower (and the messages too)
-    } else {
-      // TODO: Make this a proper exception
-      throw new RuntimeException("Tower not found");
-    }
+    // Let the CIS know to remove the "members of this City" who are members of this Tower and no
+    // other Towers within this City.
+    List<String> membersOfCity =
+        cisCommunicationsService.removeCityMembers(membersUniqueToThisTower);
+    // endregion
+    // Actually delete this Tower
+    towerRepository.deleteById(towerId);
+    // TODO: Delete the channels in this Tower (and the messages too)
   }
 
-  public Optional<TowerDto> editTower(
+  public TowerDto editTower(
       String towerId, TowerDto towerDto, MultipartFile icon, MultipartFile banner) {
     if (!towerRepository.existsById(towerId)) {
-      // TODO: Make a proper exception
-      throw new RuntimeException("Tower not found");
+      throw new EntityDoesNotExistException("Tower", towerId);
     }
-    Optional<Tower> towerOptional = towerRepository.findById(towerId);
-    if (towerOptional.isEmpty()) {
-      return Optional.empty();
-    }
-    Tower tower = towerOptional.get();
+    Tower tower =
+        towerRepository
+            .findById(towerId)
+            .orElseThrow(() -> new EntityDoesNotExistException("Tower", towerId));
 
     try {
       // Update icon and banner depending on what the user uploaded
@@ -240,13 +231,12 @@ public class TowerService {
     // Update the colors. We don't bother checking if they're valid hex values.
     tower.setPrimaryColor(towerDto.getPrimaryColor());
     tower.setSecondaryColor(towerDto.getSecondaryColor());
-    // Update the Tower in the database
+    // Update the Tower in the database and convert the result to a DTO
     TowerDto editedDto =
         towerMapper.towerToTowerDto(towerRepository.save(tower), autoRegisterCity.getCityId());
     // Notify all subscribed clients that this Tower has been edited
     towerNotifier.notifyEditedTower(editedDto);
-
-    return Optional.of(editedDto);
+    return editedDto;
   }
 
   private Tower updateIcon(Tower tower, MultipartFile icon) throws IOException {

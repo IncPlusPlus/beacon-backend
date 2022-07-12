@@ -23,7 +23,7 @@ public class ChannelController implements ChannelsApi {
 
   @Override
   public ResponseEntity<ChannelDto> deleteChannel(String towerId, String channelId) {
-    return ResponseEntity.of(channelService.deleteChannel(towerId, channelId));
+    return ResponseEntity.ok(channelService.deleteChannel(towerId, channelId));
   }
 
   @Override

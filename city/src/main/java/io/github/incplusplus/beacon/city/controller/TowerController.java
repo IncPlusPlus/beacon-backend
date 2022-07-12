@@ -38,7 +38,7 @@ public class TowerController implements TowersApi {
 
   @Override
   public ResponseEntity<TowerDto> getTowerById(String towerId) {
-    return ResponseEntity.of(towerService.getTower(towerId));
+    return ResponseEntity.ok(towerService.getTower(towerId));
   }
 
   @Override
@@ -50,7 +50,7 @@ public class TowerController implements TowersApi {
   @Override
   public ResponseEntity<TowerDto> editTower(
       String towerId, TowerDto towerDto, MultipartFile icon, MultipartFile banner) {
-    return ResponseEntity.of(towerService.editTower(towerId, towerDto, icon, banner));
+    return ResponseEntity.ok(towerService.editTower(towerId, towerDto, icon, banner));
   }
 
   @Override
