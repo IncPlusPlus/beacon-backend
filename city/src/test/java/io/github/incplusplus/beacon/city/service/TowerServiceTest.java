@@ -116,16 +116,13 @@ public class TowerServiceTest extends AbstractServiceTest {
     when(loginAuthenticationProvider.getIdForUsername(userTwoName)).thenReturn(userTwoId);
     when(loginAuthenticationProvider.getIdForUsername(userThreeName)).thenReturn(userThreeId);
     when(autoRegisterCity.getCityId()).thenReturn(cityId);
-    when(storageService.saveTowerIcon(eq(t2Icon), anyString(), any()))
-        .thenReturn(t2.getIconUrl());
+    when(storageService.saveTowerIcon(eq(t2Icon), anyString(), any())).thenReturn(t2.getIconUrl());
     when(storageService.saveTowerBanner(eq(t2Banner), anyString(), any()))
         .thenReturn(t2.getBannerUrl());
-    when(storageService.saveTowerIcon(eq(t3Icon), anyString(), any()))
-        .thenReturn(t3.getIconUrl());
+    when(storageService.saveTowerIcon(eq(t3Icon), anyString(), any())).thenReturn(t3.getIconUrl());
     when(storageService.saveTowerBanner(eq(t3Banner), anyString(), any()))
         .thenReturn(t3.getBannerUrl());
-    when(storageService.saveTowerIcon(
-            eq(thisUploadShouldThrowIOException), anyString(), any()))
+    when(storageService.saveTowerIcon(eq(thisUploadShouldThrowIOException), anyString(), any()))
         .thenThrow(new IOException("This is meant to be thrown"));
   }
 
@@ -181,8 +178,8 @@ public class TowerServiceTest extends AbstractServiceTest {
     assertThat(editedTower.getBannerUrl()).isEqualTo(t2.getBannerUrl());
 
     // Verify certain methods were called exactly once
-    verify(storageService).saveTowerIcon(t2Icon, newTower.getId(),null);
-    verify(storageService).saveTowerBanner(t2Banner, newTower.getId(),null);
+    verify(storageService).saveTowerIcon(t2Icon, newTower.getId(), null);
+    verify(storageService).saveTowerBanner(t2Banner, newTower.getId(), null);
   }
 
   @Test
