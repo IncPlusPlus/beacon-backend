@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.github.f4b6a3.tsid.TsidCreator;
 import io.github.incplusplus.beacon.centralidentityserver.exception.UserAlreadyExistsException;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateAccountRequestDto;
+import io.github.incplusplus.beacon.centralidentityserver.generated.dto.PasswordContainerDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAccountDto;
 import io.github.incplusplus.beacon.centralidentityserver.mapper.UserMapper;
 import io.github.incplusplus.beacon.centralidentityserver.persistence.dao.UserRepository;
@@ -133,6 +134,17 @@ public class UserService {
   public Optional<UserAccountDto> updateProfilePicture(MultipartFile picture, String userId) {
     deleteCurrentProfilePicture(userId);
     return setProfilePicture(picture, userId);
+  }
+
+  public Optional<UserAccountDto> updatePassword(
+      String name, PasswordContainerDto passwordContainerDto) {
+    Optional<User> userOptional = userRepository.findByUsername(name);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      user.setPassword(passwordEncoder.encode(passwordContainerDto.getPassword()));
+      userOptional = Optional.of(userRepository.save(user));
+    }
+    return userOptional.map(userMapper::userToUserDto);
   }
 
   private void deleteCurrentProfilePicture(String userId) {
