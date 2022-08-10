@@ -2,6 +2,7 @@ package io.github.incplusplus.beacon.centralidentityserver.controller;
 
 import io.github.incplusplus.beacon.centralidentityserver.generated.controller.AccountManagementApi;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.CreateAccountRequestDto;
+import io.github.incplusplus.beacon.centralidentityserver.generated.dto.PasswordContainerDto;
 import io.github.incplusplus.beacon.centralidentityserver.generated.dto.UserAccountDto;
 import io.github.incplusplus.beacon.centralidentityserver.security.IAuthenticationFacade;
 import io.github.incplusplus.beacon.centralidentityserver.service.UserService;
@@ -46,6 +47,13 @@ public class AccountManagementController implements AccountManagementApi {
     return ResponseEntity.of(
         userService.publicGetAccountById(
             userAccountId, authenticationFacade.getAuthentication().getName()));
+  }
+
+  @Override
+  public ResponseEntity<UserAccountDto> updatePassword(PasswordContainerDto passwordContainerDto) {
+    return ResponseEntity.of(
+        userService.updatePassword(
+            authenticationFacade.getAuthentication().getName(), passwordContainerDto));
   }
 
   @Override

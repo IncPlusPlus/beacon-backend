@@ -96,6 +96,32 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/account/update-password':
+    put:
+      tags: [ Account Management ]
+      summary: Change the password for this account
+      operationId: updatePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: PasswordContainer
+              type: object
+              properties:
+                password:
+                  description: The new password
+                  type: string
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/cities':
     get:
       tags: [ City Management ]
