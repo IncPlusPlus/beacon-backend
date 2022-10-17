@@ -62,7 +62,7 @@ dependencies {
     // For TSID generation
     implementation 'com.github.f4b6a3:tsid-creator:4.2.1'
     // For storing profile pictures
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.232'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.321'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
