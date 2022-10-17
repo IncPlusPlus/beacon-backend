@@ -51,7 +51,7 @@ dependencies {
     // Required for OpenApi generator
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // Required for OpenApi generator
-    implementation 'io.swagger.core.v3:swagger-annotations:2.1.12'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.4'
     // Required for OpenApi generator
     implementation 'org.openapitools:jackson-databind-nullable:0.2.2'
     // For showing Swagger UI
